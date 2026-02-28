@@ -1,27 +1,22 @@
-const mysql = require("mysql2");
+require('dotenv').config();
+const mysql = require('mysql2/promise');
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
+  host:     process.env.DB_HOST || 'localhost',
+  port:     process.env.DB_PORT || 3306,
+  user:     process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'medicore_hms',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
 });
 
-// Test connection
-pool.getConnection((err, connection) => {
-  if (err) {
-    console.error("❌ MySQL connection FAILED:");
-    console.error("Error Code:", err.code);
-    console.error("Error Message:", err.message);
+pool.getConnection()
+  .then(c => { console.log('✅  MySQL connected!'); c.release(); })
+  .catch(e => {
+    console.error('❌  MySQL connection FAILED:', e.message);
+    console.error('    Check DB_PASSWORD in backend/.env file');
     process.exit(1);
-  }
-
-  console.log("✅ MySQL Connected Successfully!");
-  connection.release();
-});
+  });
 
 module.exports = pool;
