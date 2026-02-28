@@ -1,0 +1,133 @@
+╔══════════════════════════════════════════════════════════════╗
+║          MediCore HMS — SETUP GUIDE (Read This First)        ║
+╚══════════════════════════════════════════════════════════════╝
+
+WHAT'S IN THIS FOLDER:
+  database.sql    ← Run this first to create MySQL tables
+  backend/        ← Node.js server (handles all data)
+  frontend/       ← The website (index.html)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 1: SET UP MYSQL DATABASE
+────────────────────────────────────────────────────────────
+
+  Option A — Using MySQL Workbench (Easier):
+    1. Open MySQL Workbench
+    2. Connect with your root password
+    3. Click: File → Open SQL Script → select database.sql
+    4. Press Ctrl+Shift+Enter to run it
+    5. You'll see: "MediCore HMS database ready!"
+
+  Option B — Using Terminal/Command Prompt:
+    mysql -u root -p < database.sql
+    (enter your MySQL password when asked)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 2: SET YOUR MYSQL PASSWORD IN .ENV FILE
+────────────────────────────────────────────────────────────
+
+  1. Open the file: backend/.env
+  2. Find this line:
+       DB_PASSWORD=YOUR_MYSQL_PASSWORD_HERE
+  3. Replace with your actual MySQL root password:
+       DB_PASSWORD=mypassword123
+  4. Save the file
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 3: INSTALL BACKEND PACKAGES
+────────────────────────────────────────────────────────────
+
+  Open Terminal / Command Prompt in VS Code:
+    1. Press Ctrl + ` (backtick) to open terminal
+    2. Type:
+         cd backend
+         npm install
+    3. Wait for it to finish (takes ~1 minute)
+    4. You'll see: "added XX packages"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 4: START THE SERVER
+────────────────────────────────────────────────────────────
+
+  In the terminal (still in backend/ folder):
+    npm run dev
+
+  You'll see:
+    ✅  MySQL connected!
+    ======================================
+     🏥  MediCore HMS is RUNNING!
+     🌐  Open: http://localhost:5000
+    ======================================
+
+  KEEP THIS TERMINAL OPEN!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 5: OPEN THE WEBSITE
+────────────────────────────────────────────────────────────
+
+  Open your browser and go to:
+    http://localhost:5000
+
+  The website will open. Login with:
+    Admin:       ADM001 / ADM001@2026
+    Receptionist: REC102 / REC102@2026
+    Doctor:      DR104  / DR104@2026
+    Lab:         LAB201 / LAB201@2026
+    Billing:     BIL301 / BIL301@2026
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HOW IT ALL WORKS NOW:
+────────────────────────────────────────────────────────────
+
+  Browser (http://localhost:5000)
+       ↕  talks to
+  Node.js Server (backend/server.js on port 5000)
+       ↕  saves to
+  MySQL Database (medicore_hms)
+
+  Every button click → API call → MySQL → saved forever!
+  Refresh the page → data is still there ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+WHAT EVERY BUTTON DOES NOW (saves to MySQL):
+────────────────────────────────────────────────────────────
+
+  ✅ Login             → verified against users table
+  ✅ Register Patient  → saved to patients table (new ID auto-created)
+  ✅ New Appointment   → saved to opd_appointments table
+  ✅ Admit Patient     → saved to admissions + bed marked occupied
+  ✅ Discharge         → status updated + bed freed
+  ✅ Write Prescription → saved to prescriptions table
+  ✅ Order Lab Test    → saved to lab_orders table
+  ✅ Submit Lab Result → result saved, status=Completed
+  ✅ Create Staff Login → saved to users table (can login immediately)
+  ✅ Generate Invoice  → saved to bills table
+  ✅ Collect Payment   → bill marked Paid with timestamp
+  ✅ Edit Charges      → prices updated in MySQL
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+COMMON ERRORS:
+────────────────────────────────────────────────────────────
+
+  Error: "Cannot reach server"
+  → Backend is not running. Run: npm run dev in backend folder
+
+  Error: "MySQL connection FAILED"
+  → Wrong password in backend/.env
+  → Or MySQL service is not running
+    Windows: Search "Services" → Start "MySQL80"
+    Mac: System Preferences → MySQL → Start
+
+  Error: "Port 5000 already in use"
+  → Change PORT=5001 in backend/.env
+  → Then open: http://localhost:5001
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

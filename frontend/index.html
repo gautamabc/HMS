@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediCore HMS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#1c2333;--border:#30363d;--border2:#3d4a5c;--accent:#2563eb;--accent2:#3b82f6;--accent-glow:rgba(37,99,235,0.25);--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--purple:#8b5cf6;--cyan:#06b6d4;--text:#e6edf3;--text2:#8b949e;--text3:#6e7681;--radius:12px;--radius-sm:8px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 20% 50%,rgba(37,99,235,0.15) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(139,92,246,0.1) 0%,transparent 50%),var(--bg);}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;width:440px;box-shadow:0 0 60px rgba(37,99,235,0.1);}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.logo-icon{width:44px;height:44px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.logo-text{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;}
+.logo-sub{font-size:10px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;}
+.field-group{margin-bottom:16px;}
+.field-group label{display:block;font-size:11px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.field-group input,.field-group select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.field-group input:focus,.field-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+.field-group select option{background:var(--surface2);}
+.btn-primary{width:100%;background:var(--accent);border:none;border-radius:var(--radius-sm);padding:13px;color:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.2s;box-shadow:0 4px 20px rgba(37,99,235,0.4);}
+.btn-primary:hover{background:#1d4ed8;}
+#pwd-change-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(245,158,11,0.1) 0%,transparent 60%),var(--bg);}
+.pwd-box{background:var(--surface);border:1px solid var(--yellow);border-radius:20px;padding:40px;width:400px;}
+#app{display:none;flex-direction:row;min-height:100vh;}
+.sidebar{width:255px;min-width:255px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sidebar-header{padding:20px;border-bottom:1px solid var(--border);}
+.sidebar-logo{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;}
+.sidebar-logo span{color:var(--accent2);}
+.sidebar-role{display:inline-flex;align-items:center;gap:5px;margin-top:7px;background:var(--accent-glow);border:1px solid var(--accent);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:600;color:var(--accent2);}
+.sidebar-user{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.user-info .name{font-size:13px;font-weight:600;}
+.user-info .id{font-size:11px;color:var(--text2);}
+nav{flex:1;padding:10px 0;}
+.nav-section{padding:8px 20px 3px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:rgba(37,99,235,0.12);color:var(--accent2);border-left-color:var(--accent);}
+.nav-icon{width:18px;text-align:center;font-size:15px;}
+.sidebar-footer{padding:14px 20px;border-top:1px solid var(--border);}
+.btn-logout{width:100%;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;color:var(--text2);font-family:inherit;font-size:12px;cursor:pointer;transition:all 0.2s;}
+.btn-logout:hover{border-color:var(--red);color:var(--red);background:rgba(239,68,68,0.08);}
+.main{flex:1;overflow-y:auto;}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(13,17,23,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.topbar-title{font-size:17px;font-weight:600;}
+.topbar-date{font-size:12px;color:var(--text2);}
+.content{padding:28px;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;transition:border-color 0.2s,transform 0.2s;}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.stat-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:8px;}
+.stat-value{font-size:28px;font-weight:700;margin-bottom:3px;}
+.stat-change{font-size:11px;color:var(--green);}
+.stat-icon{font-size:24px;float:right;margin-top:-26px;opacity:0.6;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;}
+.card-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:14px;font-weight:600;}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 22px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);background:var(--surface2);}
+td{padding:12px 22px;font-size:13px;border-top:1px solid var(--border);}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-green{background:rgba(16,185,129,0.15);color:var(--green);}
+.badge-red{background:rgba(239,68,68,0.15);color:var(--red);}
+.badge-yellow{background:rgba(245,158,11,0.15);color:var(--yellow);}
+.badge-blue{background:rgba(37,99,235,0.15);color:var(--accent2);}
+.badge-purple{background:rgba(139,92,246,0.15);color:var(--purple);}
+.badge-cyan{background:rgba(6,182,212,0.15);color:var(--cyan);}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;border:none;}
+.btn-blue{background:var(--accent);color:#fff;}
+.btn-blue:hover{background:#1d4ed8;}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2);}
+.btn-outline:hover{border-color:var(--border2);color:var(--text);}
+.btn-green{background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.3);}
+.btn-red{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3);}
+.btn-sm{padding:4px 10px;font-size:11px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:20px;}
+.form-grid.cols3{grid-template-columns:1fr 1fr 1fr;}
+.form-full{grid-column:1/-1;}
+.form-group label{display:block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:5px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color 0.2s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);}
+.form-group select option{background:var(--surface2);}
+.form-group textarea{resize:vertical;min-height:75px;}
+.form-footer{padding:0 20px 20px;display:flex;gap:8px;justify-content:flex-end;}
+.tabs{display:flex;gap:2px;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;width:fit-content;margin-bottom:20px;}
+.tab{padding:7px 16px;border-radius:6px;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.15s;}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.5);animation:modalIn 0.2s ease;}
+@keyframes modalIn{from{transform:scale(0.96) translateY(8px);opacity:0;}to{transform:none;opacity:1;}}
+.modal-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:15px;font-weight:600;}
+.modal-close{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;padding:3px 7px;border-radius:5px;}
+.modal-close:hover{background:var(--surface2);color:var(--text);}
+.alert{padding:12px 16px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.alert-success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:var(--green);}
+.alert-warning{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:var(--yellow);}
+.search-bar{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0 12px;width:260px;transition:border-color 0.2s;}
+.search-bar:focus-within{border-color:var(--accent);}
+.search-bar input{background:none;border:none;padding:9px 0;color:var(--text);font-family:inherit;font-size:12px;outline:none;width:100%;}
+.bill-line{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.bill-total{display:flex;justify-content:space-between;padding:12px 0;font-size:15px;font-weight:700;color:var(--accent2);}
+.bed-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;padding:20px;}
+.bed-cell{border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;text-align:center;font-size:11px;cursor:pointer;transition:all 0.2s;}
+.bed-cell.occupied{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);}
+.bed-cell.free{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.25);}
+.bed-cell:hover{transform:scale(1.05);}
+.bed-num{font-size:14px;font-weight:700;margin-bottom:3px;}
+.log-line{display:flex;gap:10px;padding:11px 22px;border-bottom:1px solid var(--border);font-size:12px;}
+.log-time{color:var(--text3);min-width:130px;}
+.log-user{color:var(--accent2);min-width:75px;font-weight:600;}
+.log-action{color:var(--text);flex:1;}
+.page-hero{margin-bottom:24px;}
+.page-hero h1{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:3px;}
+.page-hero p{color:var(--text2);font-size:13px;}
+.toast{position:fixed;bottom:28px;right:28px;background:var(--surface);border:1px solid var(--green);border-radius:10px;padding:14px 20px;font-size:13px;color:var(--green);z-index:9999;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:slideIn 0.3s ease;max-width:360px;}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:none;opacity:1;}}
+</style>
+</head>
+<body>
+
+<!-- PASSWORD CHANGE -->
+<div id="pwd-change-screen" style="display:none">
+  <div class="pwd-box">
+    <div style="font-size:30px;margin-bottom:10px">🔐</div>
+    <h2 style="margin-bottom:6px">Set New Password</h2>
+    <p style="color:var(--text2);font-size:13px;margin-bottom:20px">First login — you must set a new password to continue.</p>
+    <div class="field-group"><label>New Password</label><input type="password" id="new-pwd" placeholder="Min 6 characters"></div>
+    <div class="field-group"><label>Confirm Password</label><input type="password" id="confirm-pwd" placeholder="Repeat password"></div>
+    <div class="alert alert-warning" id="pwd-err" style="display:none">❌ Passwords do not match or too short.</div>
+    <button class="btn-primary" onclick="confirmPasswordChange()">Set Password & Continue</button>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-icon">🏥</div>
+      <div><div class="logo-text">MediCore</div><div class="logo-sub">Hospital Management System</div></div>
+    </div>
+    <h2 style="font-size:20px;font-weight:600;margin-bottom:5px">Welcome back</h2>
+    <p style="color:var(--text2);font-size:13px;margin-bottom:22px">Sign in to your role portal</p>
+    <div class="field-group">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="e.g. ADM001" oninput="autoFillLogin(this.value)">
+    </div>
+    <div class="field-group">
+      <label>Password</label>
+      <div style="position:relative">
+        <input type="password" id="password" placeholder="Your password" style="padding-right:40px">
+        <button type="button" onclick="togglePwd()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text2);font-size:15px" id="pwd-eye">👁️</button>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Role <span id="role-auto-badge" style="margin-left:5px;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);border-radius:20px;padding:1px 7px;font-size:9px;font-weight:600;display:none">⚡ Auto</span></label>
+      <select id="role-select">
+        <option value="admin">Admin</option>
+        <option value="receptionist">Receptionist</option>
+        <option value="doctor">Consulting Doctor</option>
+        <option value="lab">Lab Staff</option>
+        <option value="billing">Billing Staff</option>
+      </select>
+    </div>
+    <div class="alert alert-warning" id="login-err" style="display:none">❌ Invalid credentials. Check username, password and role.</div>
+    <button class="btn-primary" onclick="doLogin()">Sign In →</button>
+    <div style="margin-top:14px">
+      <div style="font-size:10px;color:var(--text3);text-align:center;margin-bottom:7px;letter-spacing:1px;text-transform:uppercase">Quick Demo Login</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px">
+        <button onclick="quickLogin('ADM001','admin')"        style="background:rgba(37,99,235,0.15);border:1px solid rgba(37,99,235,0.3);border-radius:6px;padding:6px 3px;color:#3b82f6;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit">Admin</button>
+        <button onclick="quickLogin('REC102','receptionist')" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:6px 3px;color:#10b981;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit">Recept.</button>
+        <button onclick="quickLogin('DR104','doctor')"        style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:6px;padding:6px 3px;color:#8b5cf6;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit">Doctor</button>
+        <button onclick="quickLogin('LAB201','lab')"          style="background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.3);border-radius:6px;padding:6px 3px;color:#06b6d4;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit">Lab</button>
+        <button onclick="quickLogin('BIL301','billing')"      style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);border-radius:6px;padding:6px 3px;color:#f59e0b;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit">Billing</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">Medi<span>Core</span></div>
+      <div class="sidebar-role" id="sidebar-role-badge">● Admin</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="avatar" id="sidebar-avatar">A</div>
+      <div class="user-info"><div class="name" id="sidebar-name">Administrator</div><div class="id" id="sidebar-id">ADM001</div></div>
+    </div>
+    <nav id="sidebar-nav"></nav>
+    <div class="sidebar-footer"><button class="btn-logout" onclick="doLogout()">⎋ &nbsp;Sign Out</button></div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:20px;padding:2px 10px;color:#10b981" id="db-badge">⚡ MySQL Live</div>
+        <div class="topbar-date" id="topbar-date"></div>
+      </div>
+    </div>
+    <div class="content" id="content-area"></div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Modal</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+
+// ══════════════════════════════════════════════════════
+//  API BRIDGE — connects frontend to Node.js backend
+//  All data now saves to MySQL via the Express server
+// ══════════════════════════════════════════════════════
+const API_BASE = '';  // empty = same server (backend serves this file)
+let AUTH_TOKEN = localStorage.getItem('hms_tok') || null;
+
+async function apiCall(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (AUTH_TOKEN) opts.headers['Authorization'] = 'Bearer ' + AUTH_TOKEN;
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const r = await fetch(API_BASE + '/api' + path, opts);
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Server error');
+    return data;
+  } catch(e) {
+    if (e.message.includes('Failed to fetch')) {
+      throw new Error('Cannot reach server. Make sure backend is running on port 5000!');
+    }
+    throw e;
+  }
+}
+
+function showToast(msg, isErr=false) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid ${isErr?'var(--red)':'var(--green)'};border-radius:10px;padding:13px 18px;font-size:13px;color:${isErr?'var(--red)':'var(--green)'};z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.4);max-width:340px;animation:sldi .3s ease`;
+  t.textContent = (isErr ? '❌ ' : '✅ ') + msg;
+  if (!document.getElementById('sldi-style')) {
+    const s = document.createElement('style');
+    s.id = 'sldi-style';
+    s.textContent = '@keyframes sldi{from{transform:translateX(110%);opacity:0}to{transform:none;opacity:1}}';
+    document.head.appendChild(s);
+  }
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ===================== STORAGE ENGINE =====================
+// All data persists in localStorage so it survives refresh
+const DB = {
+  get(key, def) {
+    try { const v = localStorage.getItem('hms_'+key); return v ? JSON.parse(v) : def; } catch(e) { return def; }
+  },
+  set(key, val) {
+    try { localStorage.setItem('hms_'+key, JSON.stringify(val)); } catch(e) {}
+  }
+};
+
+// ===================== SEED / INITIAL DATA =====================
+function initData() {
+  if (!DB.get('seeded')) {
+    DB.set('patients', [
+      {id:'P1001',name:'Anita Joshi',age:34,gender:'Female',phone:'9876543210',address:'Mumbai',blood:'B+',doctor:'DR104',doctorName:'Dr. Rajesh Mehta',type:'OPD',status:'Active',created:'2026-02-20'},
+      {id:'P1002',name:'Ramesh Kumar',age:58,gender:'Male',phone:'9123456789',address:'Pune',blood:'O+',doctor:'DR104',doctorName:'Dr. Rajesh Mehta',type:'IPD',status:'Admitted',bed:'G-04',created:'2026-02-25'},
+      {id:'P1003',name:'Sushma Rao',age:45,gender:'Female',phone:'9988776655',address:'Nashik',blood:'A+',doctor:'DR104',doctorName:'Dr. Rajesh Mehta',type:'OPD',status:'Active',created:'2026-02-22'},
+      {id:'P1004',name:'Vijay Singh',age:29,gender:'Male',phone:'9876512345',address:'Thane',blood:'B-',doctor:'DR104',doctorName:'Dr. Rajesh Mehta',type:'IPD',status:'Admitted',bed:'P-02',created:'2026-02-24'},
+      {id:'P1005',name:'Meena Desai',age:62,gender:'Female',phone:'9012345678',address:'Aurangabad',blood:'AB+',doctor:'DR104',doctorName:'Dr. Rajesh Mehta',type:'OPD',status:'Discharged',created:'2026-02-18'},
+    ]);
+    DB.set('appointments', [
+      {id:'A001',pid:'P1001',patient:'Anita Joshi',time:'09:00',doctor:'Dr. Rajesh Mehta',reason:'Fever & Cough',status:'Waiting',date:'2026-02-27'},
+      {id:'A002',pid:'P1003',patient:'Sushma Rao',time:'09:30',doctor:'Dr. Rajesh Mehta',reason:'BP Check-up',status:'In Progress',date:'2026-02-27'},
+      {id:'A003',pid:'P1001',patient:'Kiran Shah',time:'10:00',doctor:'Dr. Priya Nair',reason:'Diabetes follow-up',status:'Scheduled',date:'2026-02-27'},
+      {id:'A004',pid:'P1004',patient:'Mohan Das',time:'10:30',doctor:'Dr. Rajesh Mehta',reason:'Back Pain',status:'Scheduled',date:'2026-02-27'},
+    ]);
+    DB.set('admissions', [
+      {id:'ADM001',pid:'P1002',patient:'Ramesh Kumar',doctor:'Dr. Rajesh Mehta',bed:'G-04',bedType:'General',admitDate:'2026-02-25',days:2,status:'Admitted',reason:'Chest pain'},
+      {id:'ADM002',pid:'P1004',patient:'Vijay Singh',doctor:'Dr. Rajesh Mehta',bed:'P-02',bedType:'Private',admitDate:'2026-02-24',days:3,status:'Admitted',reason:'Fracture'},
+    ]);
+    DB.set('labOrders', [
+      {id:'L001',pid:'P1002',patient:'Ramesh Kumar',test:'Complete Blood Count',code:'CBC',price:250,ordered:'09:15',status:'Pending',date:'2026-02-27'},
+      {id:'L002',pid:'P1004',patient:'Vijay Singh',test:'Liver Function Test',code:'LFT',price:400,ordered:'08:45',status:'In Progress',date:'2026-02-27'},
+      {id:'L003',pid:'P1001',patient:'Anita Joshi',test:'Blood Sugar',code:'BS',price:150,ordered:'07:30',status:'Completed',result:'Fasting: 102 mg/dL',date:'2026-02-27'},
+    ]);
+    DB.set('prescriptions', [
+      {id:'RX001',pid:'P1002',patient:'Ramesh Kumar',doctor:'Dr. Rajesh Mehta',diagnosis:'Hypertension',meds:'Amlodipine 5mg — 1x/day\nAspirin 75mg — 1x/day',instructions:'After meals. Monitor BP daily.',followup:'2026-03-10',date:'2026-02-27'},
+      {id:'RX002',pid:'P1001',patient:'Anita Joshi',doctor:'Dr. Rajesh Mehta',diagnosis:'URTI',meds:'Amoxicillin 500mg — 3x/day\nCetirizine 10mg — 1 at night',instructions:'7-day course. Rest and fluids.',followup:'2026-03-05',date:'2026-02-27'},
+    ]);
+    DB.set('bills', [
+      {id:'BILL-0245',pid:'P1005',patient:'Meena Desai',date:'2026-02-26',subtotal:1200,discount:0,final:1200,status:'Paid',mode:'Cash'},
+    ]);
+    DB.set('ipdNotes', [
+      {id:'N001',admId:'ADM001',pid:'P1002',patient:'Ramesh Kumar',doctor:'Dr. Rajesh Mehta',date:'2026-02-26',observations:'Patient stable. BP: 128/82. Temp normal. Continue antibiotics.',plan:'Chest X-ray ordered. Continue current meds.'},
+      {id:'N002',admId:'ADM001',pid:'P1002',patient:'Ramesh Kumar',doctor:'Dr. Rajesh Mehta',date:'2026-02-25',observations:'Admitted with chest pain. ECG done. Troponin within limits.',plan:'Monitor O2 saturation. Start antibiotics.'},
+    ]);
+    DB.set('staff', [
+      {id:'REC102',name:'Priya Sharma',role:'Receptionist',spec:'',phone:'9000000001',status:'Active',created:'2026-01-15'},
+      {id:'DR104',name:'Dr. Rajesh Mehta',role:'Consulting Doctor',spec:'General Medicine',phone:'9000000002',status:'Active',created:'2026-01-10'},
+      {id:'DR105',name:'Dr. Priya Nair',role:'Consulting Doctor',spec:'Cardiology',phone:'9000000003',status:'Active',created:'2026-01-12'},
+      {id:'LAB201',name:'Sunita Patel',role:'Lab Staff',spec:'',phone:'9000000004',status:'Active',created:'2026-02-01'},
+      {id:'BIL301',name:'Arun Verma',role:'Billing Staff',spec:'',phone:'9000000005',status:'Active',created:'2026-02-05'},
+    ]);
+    DB.set('charges', {
+      consultation:[{docId:'DR104',name:'Dr. Rajesh Mehta',opd:500,ipd:1000},{docId:'DR105',name:'Dr. Priya Nair',opd:800,ipd:1500}],
+      beds:[{type:'General',price:500},{type:'Semi-Private',price:1200},{type:'Private',price:2500},{type:'ICU',price:5000}],
+      lab:[{code:'CBC',name:'Complete Blood Count',price:250},{code:'LFT',name:'Liver Function Test',price:400},{code:'LIPID',name:'Lipid Profile',price:350},{code:'BS',name:'Blood Sugar',price:150},{code:'TFT',name:'Thyroid Function Test',price:500},{code:'URINE',name:'Urine Routine',price:100}],
+      procedures:[{name:'ECG',price:200},{name:'X-Ray Chest',price:350},{name:'USG Abdomen',price:1200},{name:'2D Echo',price:2500}],
+    });
+    DB.set('beds', [
+      {code:'G-01',type:'General',status:'free'},{code:'G-02',type:'General',status:'free'},{code:'G-03',type:'General',status:'free'},
+      {code:'G-04',type:'General',status:'occupied',patient:'Ramesh Kumar'},{code:'G-05',type:'General',status:'free'},
+      {code:'G-06',type:'General',status:'free'},{code:'G-07',type:'General',status:'free'},{code:'G-08',type:'General',status:'free'},
+      {code:'SP-01',type:'Semi-Private',status:'free'},{code:'SP-02',type:'Semi-Private',status:'free'},
+      {code:'SP-03',type:'Semi-Private',status:'free'},{code:'SP-04',type:'Semi-Private',status:'free'},
+      {code:'P-01',type:'Private',status:'free'},{code:'P-02',type:'Private',status:'occupied',patient:'Vijay Singh'},{code:'P-03',type:'Private',status:'free'},
+      {code:'ICU-01',type:'ICU',status:'free'},{code:'ICU-02',type:'ICU',status:'free'},{code:'ICU-03',type:'ICU',status:'free'},
+    ]);
+    DB.set('auditLogs', [
+      {time:'2026-02-27 09:42',user:'ADM001',action:'Created login for DR104',type:'Create'},
+      {time:'2026-02-27 09:38',user:'REC102',action:'Registered patient P1001 — Anita Joshi',type:'Create'},
+      {time:'2026-02-27 09:30',user:'DR104',action:'Added prescription for P1002 — Ramesh Kumar',type:'Update'},
+      {time:'2026-02-27 09:15',user:'LAB201',action:'Uploaded lab report for P1001 — CBC',type:'Update'},
+      {time:'2026-02-27 09:00',user:'BIL301',action:'Generated BILL-0245 for Meena Desai',type:'Billing'},
+    ]);
+    DB.set('patientCounter', 1006);
+    DB.set('labCounter', 4);
+    DB.set('billCounter', 246);
+    DB.set('staffCounters', {receptionist:103,doctor:106,lab:202,billing:302});
+    DB.set('passwords', {ADM001:'ADM001@2026',REC102:'REC102@2026',DR104:'DR104@2026',LAB201:'LAB201@2026',BIL301:'BIL301@2026'});
+    DB.set('firstLogins', {REC102:true});
+    DB.set('seeded', true);
+  }
+}
+
+// ===================== AUTH =====================
+const USERS = {
+  ADM001:{role:'admin',name:'Admin Kumar',color:'#3b82f6',bg:'rgba(37,99,235,0.2)'},
+  REC102:{role:'receptionist',name:'Priya Sharma',color:'#10b981',bg:'rgba(16,185,129,0.2)'},
+  DR104:{role:'doctor',name:'Dr. Rajesh Mehta',color:'#8b5cf6',bg:'rgba(139,92,246,0.2)'},
+  LAB201:{role:'lab',name:'Sunita Patel',color:'#06b6d4',bg:'rgba(6,182,212,0.2)'},
+  BIL301:{role:'billing',name:'Arun Verma',color:'#f59e0b',bg:'rgba(245,158,11,0.2)'},
+};
+
+let currentUser=null, currentRole=null;
+
+function autoFillLogin(val) {
+  const u=val.trim().toUpperCase();
+  const passwords=DB.get('passwords',{});
+  const user=USERS[u]||DB.get('extraUsers',{})[u];
+  if(user&&passwords[u]){
+    document.getElementById('role-select').value=user.role;
+    document.getElementById('password').value=passwords[u];
+    document.getElementById('role-auto-badge').style.display='inline';
+    document.getElementById('login-err').style.display='none';
+  } else {
+    document.getElementById('role-auto-badge').style.display='none';
+  }
+}
+
+function quickLogin(u,r){
+  document.getElementById('username').value=u;
+  autoFillLogin(u);
+  setTimeout(doLogin,250);
+}
+
+function togglePwd(){
+  const i=document.getElementById('password'),e=document.getElementById('pwd-eye');
+  if(i.type==='password'){i.type='text';e.textContent='🙈';}else{i.type='password';e.textContent='👁️';}
+}
+
+function doLogin(){
+  const u=document.getElementById('username').value.trim().toUpperCase();
+  const p=document.getElementById('password').value.trim();
+  const r=document.getElementById('role-select').value;
+  const passwords=DB.get('passwords',{});
+  const allUsers={...USERS,...DB.get('extraUsers',{})};
+  const user=allUsers[u];
+  if(!user||passwords[u]!==p){
+    document.getElementById('login-err').style.display='flex';return;
+  }
+  document.getElementById('login-err').style.display='none';
+  // Auto-fix role mismatch
+  if(user.role!==r) document.getElementById('role-select').value=user.role;
+  currentUser=u; currentRole=user.role;
+  const firstLogins=DB.get('firstLogins',{});
+  if(firstLogins[u]){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('pwd-change-screen').style.display='flex';
+    return;
+  }
+  launchApp();
+}
+
+function confirmPasswordChange(){
+  const np=document.getElementById('new-pwd').value;
+  const cp=document.getElementById('confirm-pwd').value;
+  if(np!==cp||np.length<6){document.getElementById('pwd-err').style.display='flex';return;}
+  const passwords=DB.get('passwords',{});
+  passwords[currentUser]=np;
+  DB.set('passwords',passwords);
+  const fl=DB.get('firstLogins',{});
+  delete fl[currentUser];
+  DB.set('firstLogins',fl);
+  auditLog(`Changed password on first login`);
+  document.getElementById('pwd-change-screen').style.display='none';
+  launchApp();
+}
+
+function launchApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  const allUsers={...USERS,...DB.get('extraUsers',{})};
+  const user=allUsers[currentUser];
+  document.getElementById('sidebar-name').textContent=user.name;
+  document.getElementById('sidebar-id').textContent=currentUser;
+  const av=document.getElementById('sidebar-avatar');
+  av.textContent=user.name.split(' ').map(x=>x[0]).slice(0,2).join('');
+  av.style.background=user.bg; av.style.color=user.color;
+  const roleLabels={admin:'Admin',receptionist:'Receptionist',doctor:'Consulting Doctor',lab:'Lab Staff',billing:'Billing Staff'};
+  document.getElementById('sidebar-role-badge').textContent='● '+roleLabels[currentRole];
+  document.getElementById('topbar-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
+  buildNav(); navigate('dashboard');
+}
+
+function doLogout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('username').value='';
+  document.getElementById('password').value='';
+  currentUser=null; currentRole=null;
+}
+
+// ===================== UTILS =====================
+function auditLog(action,type='Update'){
+  const logs=DB.get('auditLogs',[]);
+  logs.unshift({time:new Date().toLocaleString('en-IN').replace(/\//g,'-'),user:currentUser,action,type});
+  DB.set('auditLogs',logs);
+}
+
+function toast(msg,color='var(--green)'){
+  const t=document.createElement('div');
+  t.className='toast'; t.style.borderColor=color; t.style.color=color;
+  t.innerHTML='✅ '+msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+function genId(prefix,counterKey){
+  let n=DB.get(counterKey,100);
+  DB.set(counterKey,n+1);
+  return prefix+String(n).padStart(4,'0');
+}
+
+function showModal(title,html){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=html;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+// ===================== NAV =====================
+const MENUS={
+  admin:[{section:'Overview'},{id:'dashboard',icon:'📊',label:'Dashboard'},{section:'Management'},{id:'staff',icon:'👥',label:'Staff Management'},{id:'charges',icon:'💰',label:'Master Charges'},{section:'Reports'},{id:'reports',icon:'📈',label:'System Reports'},{id:'audit',icon:'🔍',label:'Audit Logs'}],
+  receptionist:[{section:'Overview'},{id:'dashboard',icon:'📋',label:'Dashboard'},{section:'Patients'},{id:'reg-patient',icon:'➕',label:'Register Patient'},{id:'opd',icon:'🏥',label:'OPD Appointments'},{section:'IPD'},{id:'ipd',icon:'🛏️',label:'IPD Admissions'},{id:'beds',icon:'📍',label:'Bed Management'},{section:'Tools'},{id:'search',icon:'🔎',label:'Patient Search'}],
+  doctor:[{section:'Overview'},{id:'dashboard',icon:'🩺',label:'My Dashboard'},{section:'Patients'},{id:'my-patients',icon:'👤',label:'My Patients'},{id:'prescriptions',icon:'💊',label:'Prescriptions'},{id:'ipd-notes',icon:'📝',label:'IPD Progress Notes'},{section:'Lab'},{id:'lab-results',icon:'🧪',label:'Lab Reports'}],
+  lab:[{section:'Overview'},{id:'dashboard',icon:'🧬',label:'Lab Dashboard'},{section:'Tests'},{id:'pending-tests',icon:'⏳',label:'Pending Tests'},{id:'upload-results',icon:'📤',label:'Upload Results'},{id:'test-history',icon:'📚',label:'Test History'}],
+  billing:[{section:'Overview'},{id:'dashboard',icon:'💳',label:'Billing Dashboard'},{section:'Billing'},{id:'generate-bill',icon:'🧾',label:'Generate Invoice'},{id:'payment-status',icon:'✅',label:'Payment Status'},{id:'charges-view',icon:'📋',label:'Charge Summary'}],
+};
+
+function buildNav(){
+  const menu=MENUS[currentRole];
+  const nav=document.getElementById('sidebar-nav');
+  nav.innerHTML='';
+  menu.forEach(item=>{
+    if(item.section){nav.innerHTML+=`<div class="nav-section">${item.section}</div>`;}
+    else{nav.innerHTML+=`<div class="nav-item" id="nav-${item.id}" onclick="navigate('${item.id}')"><span class="nav-icon">${item.icon}</span>${item.label}</div>`;}
+  });
+}
+
+const PAGE_TITLES={dashboard:'Dashboard',staff:'Staff Management',charges:'Master Charges',reports:'System Reports',audit:'Audit Logs','reg-patient':'Register Patient',opd:'OPD Appointments',ipd:'IPD Admissions',beds:'Bed Management',search:'Patient Search','my-patients':'My Patients',prescriptions:'Prescriptions','ipd-notes':'IPD Progress Notes','lab-results':'Lab Reports','pending-tests':'Pending Tests','upload-results':'Upload Results','test-history':'Test History','generate-bill':'Generate Invoice','payment-status':'Payment Status','charges-view':'Charge Summary'};
+
+function navigate(id){
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const el=document.getElementById('nav-'+id);
+  if(el)el.classList.add('active');
+  document.getElementById('topbar-title').textContent=PAGE_TITLES[id]||id;
+  const area=document.getElementById('content-area');
+  const fns={dashboard:renderDashboard,staff:renderStaff,charges:renderCharges,reports:renderReports,audit:renderAudit,'reg-patient':renderRegPatient,opd:renderOPD,ipd:renderIPD,beds:renderBeds,search:renderSearch,'my-patients':renderMyPatients,prescriptions:renderPrescriptions,'ipd-notes':renderIPDNotes,'lab-results':renderLabResults,'pending-tests':renderPendingTests,'upload-results':renderUploadResults,'test-history':renderTestHistory,'generate-bill':renderGenerateBill,'payment-status':renderPaymentStatus,'charges-view':renderChargesView};
+  area.innerHTML=fns[id]?fns[id]():`<div style="padding:40px;text-align:center;color:var(--text2)">Coming soon...</div>`;
+}
+
+function showTab(el,id){
+  document.querySelectorAll('.charge-tab').forEach(t=>t.style.display='none');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).style.display='block';
+  el.classList.add('active');
+}
+
+// ===================== DASHBOARD =====================
+function renderDashboard(){
+  const pts=DB.get('patients',[]);
+  const appts=DB.get('appointments',[]);
+  const beds=DB.get('beds',[]);
+  const adms=DB.get('admissions',[]).filter(a=>a.status==='Admitted');
+  const bills=DB.get('bills',[]);
+  const logs=DB.get('auditLogs',[]);
+  const occ=beds.filter(b=>b.status==='occupied').length;
+  const staff=DB.get('staff',[]);
+  const paidToday=bills.filter(b=>b.status==='Paid').reduce((s,b)=>s+b.final,0);
+  const labOrders=DB.get('labOrders',[]);
+
+  if(currentRole==='admin') return `
+    <div class="page-hero"><h1>Good morning, Administrator 👋</h1><p>Hospital overview — live data from localStorage</p></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-label">Total Patients</div><div class="stat-value" style="color:#3b82f6">${pts.length}</div><div class="stat-change">All time</div></div>
+      <div class="stat-card"><div class="stat-icon">🛏️</div><div class="stat-label">Beds Occupied</div><div class="stat-value" style="color:#8b5cf6">${occ}<span style="font-size:14px;color:var(--text2)">/${beds.length}</span></div><div class="stat-change">${Math.round(occ/beds.length*100)}% occupancy</div></div>
+      <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Revenue Collected</div><div class="stat-value" style="color:#10b981">₹${(paidToday/1000).toFixed(1)}K</div><div class="stat-change">Paid invoices</div></div>
+      <div class="stat-card"><div class="stat-icon">🧑‍⚕️</div><div class="stat-label">Active Staff</div><div class="stat-value" style="color:#f59e0b">${staff.filter(s=>s.status==='Active').length}</div><div class="stat-change">All roles</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Recent Activity</span><button class="btn btn-outline btn-sm" onclick="navigate('audit')">View All</button></div>
+      ${logs.slice(0,6).map(l=>`<div class="log-line"><span class="log-time">🕐 ${l.time}</span><span class="log-user">${l.user}</span><span class="log-action">${l.action}</span><span class="badge ${l.type==='Create'?'badge-green':l.type==='Billing'?'badge-yellow':'badge-blue'}" style="margin-left:auto;white-space:nowrap">${l.type}</span></div>`).join('')}
+    </div>`;
+
+  if(currentRole==='receptionist') return `
+    <div class="page-hero"><h1>Receptionist Portal 📋</h1><p>Manage registrations and appointments</p></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-label">Today's Appointments</div><div class="stat-value" style="color:#3b82f6">${appts.length}</div><div class="stat-change">${appts.filter(a=>a.status==='Waiting').length} waiting</div></div>
+      <div class="stat-card"><div class="stat-icon">➕</div><div class="stat-label">Total Patients</div><div class="stat-value" style="color:#10b981">${pts.length}</div><div class="stat-change">Registered</div></div>
+      <div class="stat-card"><div class="stat-icon">🛏️</div><div class="stat-label">Beds Free</div><div class="stat-value" style="color:#f59e0b">${beds.filter(b=>b.status==='free').length}</div><div class="stat-change">Of ${beds.length} total</div></div>
+      <div class="stat-card"><div class="stat-icon">🏥</div><div class="stat-label">IPD Admitted</div><div class="stat-value" style="color:#8b5cf6">${adms.length}</div><div class="stat-change">Active</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Today's Appointments</span><button class="btn btn-blue btn-sm" onclick="navigate('opd')">View All</button></div>
+      <table><thead><tr><th>Time</th><th>Patient</th><th>Doctor</th><th>Reason</th><th>Status</th></tr></thead>
+      <tbody>${appts.slice(0,5).map(a=>`<tr><td>${a.time}</td><td><strong>${a.patient}</strong></td><td>${a.doctor}</td><td>${a.reason}</td><td><span class="badge ${a.status==='Waiting'?'badge-yellow':a.status==='In Progress'?'badge-blue':'badge-green'}">${a.status}</span></td></tr>`).join('')}</tbody></table>
+    </div>`;
+
+  if(currentRole==='doctor') return `
+    <div class="page-hero"><h1>Dr. Rajesh Mehta 🩺</h1><p>General Medicine · Patient rounds</p></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-label">OPD Queue</div><div class="stat-value" style="color:#3b82f6">${appts.filter(a=>a.doctor.includes('Rajesh')).length}</div><div class="stat-change">${appts.filter(a=>a.doctor.includes('Rajesh')&&a.status==='Waiting').length} waiting</div></div>
+      <div class="stat-card"><div class="stat-icon">🛏️</div><div class="stat-label">IPD Patients</div><div class="stat-value" style="color:#8b5cf6">${adms.length}</div><div class="stat-change">Admitted</div></div>
+      <div class="stat-card"><div class="stat-icon">🧪</div><div class="stat-label">Lab Pending</div><div class="stat-value" style="color:#06b6d4">${labOrders.filter(l=>l.status!=='Completed').length}</div><div class="stat-change">Awaiting results</div></div>
+      <div class="stat-card"><div class="stat-icon">💊</div><div class="stat-label">Prescriptions</div><div class="stat-value" style="color:#10b981">${DB.get('prescriptions',[]).length}</div><div class="stat-change">Total</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">OPD Queue</span></div>
+      <table><thead><tr><th>#</th><th>Patient</th><th>Time</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>${appts.filter(a=>a.doctor.includes('Rajesh')).map((a,i)=>`<tr>
+        <td><strong>${i+1}</strong></td><td><strong>${a.patient}</strong></td><td>${a.time}</td><td>${a.reason}</td>
+        <td><span class="badge ${a.status==='Waiting'?'badge-yellow':a.status==='In Progress'?'badge-blue':'badge-green'}">${a.status}</span></td>
+        <td><button class="btn btn-blue btn-sm" onclick="showPrescriptionModal('${a.patient}','${a.pid}')">Prescribe</button></td></tr>`).join('')}
+      </tbody></table>
+    </div>`;
+
+  if(currentRole==='lab') return `
+    <div class="page-hero"><h1>Lab Dashboard 🧬</h1><p>Manage test orders and results</p></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-label">Pending</div><div class="stat-value" style="color:#f59e0b">${labOrders.filter(l=>l.status==='Pending').length}</div></div>
+      <div class="stat-card"><div class="stat-icon">🔬</div><div class="stat-label">In Progress</div><div class="stat-value" style="color:#3b82f6">${labOrders.filter(l=>l.status==='In Progress').length}</div></div>
+      <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-label">Completed</div><div class="stat-value" style="color:#10b981">${labOrders.filter(l=>l.status==='Completed').length}</div></div>
+      <div class="stat-card"><div class="stat-icon">💸</div><div class="stat-label">Charges Added</div><div class="stat-value" style="color:#8b5cf6">₹${labOrders.filter(l=>l.status==='Completed').reduce((s,l)=>s+l.price,0)}</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Test Queue</span></div>
+      <table><thead><tr><th>ID</th><th>Patient</th><th>Test</th><th>Ordered</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>${labOrders.map(l=>`<tr>
+        <td>${l.id}</td><td><strong>${l.patient}</strong></td><td>${l.test}</td><td>${l.ordered}</td>
+        <td><span class="badge ${l.status==='Pending'?'badge-yellow':l.status==='In Progress'?'badge-blue':'badge-green'}">${l.status}</span></td>
+        <td>${l.status!=='Completed'?`<button class="btn btn-blue btn-sm" onclick="showLabResultModal('${l.id}')">Enter Result</button>`:'<span style="color:var(--text3);font-size:11px">Done ✓</span>'}</td></tr>`).join('')}
+      </tbody></table>
+    </div>`;
+
+  // billing
+  const pendingBills=DB.get('bills',[]).filter(b=>b.status==='Pending');
+  const paidBills=DB.get('bills',[]).filter(b=>b.status==='Paid');
+  return `
+    <div class="page-hero"><h1>Billing Dashboard 💳</h1><p>Auto-accumulated charges and invoices</p></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-label">Pending Bills</div><div class="stat-value" style="color:#f59e0b">${pendingBills.length}</div></div>
+      <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-label">Paid Bills</div><div class="stat-value" style="color:#10b981">${paidBills.length}</div></div>
+      <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Revenue</div><div class="stat-value" style="color:#3b82f6">₹${paidBills.reduce((s,b)=>s+b.final,0).toLocaleString('en-IN')}</div></div>
+      <div class="stat-card"><div class="stat-icon">🎟️</div><div class="stat-label">Total Patients</div><div class="stat-value" style="color:#8b5cf6">${pts.length}</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Recent Bills</span><button class="btn btn-blue btn-sm" onclick="navigate('generate-bill')">New Invoice</button></div>
+      <table><thead><tr><th>Invoice</th><th>Patient</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+      <tbody>${DB.get('bills',[]).slice(-5).reverse().map(b=>`<tr>
+        <td>${b.id}</td><td>${b.patient}</td><td>₹${b.final.toLocaleString('en-IN')}</td>
+        <td><span class="badge ${b.status==='Paid'?'badge-green':'badge-yellow'}">${b.status}</span></td>
+        <td>${b.status==='Pending'?`<button class="btn btn-green btn-sm" onclick="markPaid('${b.id}')">Collect ✅</button>`:'<span style="color:var(--text3);font-size:11px">Paid</span>'}</td></tr>`).join('')}
+      </tbody></table>
+    </div>`;
+}
+
+// ===================== ADMIN SCREENS =====================
+function renderStaff(){
+  const staff=DB.get('staff',[]);
+  return `
+    <div class="page-hero"><h1>Staff Management</h1><p>Create and manage all staff login credentials</p></div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">All Staff (${staff.length})</span><button class="btn btn-blue btn-sm" onclick="showCreateStaffModal()">➕ Create Login</button></div>
+      <table><thead><tr><th>ID</th><th>Name</th><th>Role</th><th>Specialization</th><th>Phone</th><th>Created</th><th>Status</th><th></th></tr></thead>
+      <tbody>${staff.map(s=>`<tr>
+        <td><code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:11px">${s.id}</code></td>
+        <td><strong>${s.name}</strong></td>
+        <td><span class="badge badge-blue">${s.role}</span></td>
+        <td>${s.spec||'—'}</td><td>${s.phone}</td><td>${s.created}</td>
+        <td><span class="badge ${s.status==='Active'?'badge-green':'badge-red'}">${s.status}</span></td>
+        <td><button class="btn btn-outline btn-sm" onclick="toggleStaffStatus('${s.id}')">${s.status==='Active'?'Deactivate':'Activate'}</button></td></tr>`).join('')}
+      </tbody></table>
+    </div>`;
+}
+
+function toggleStaffStatus(id){
+  const staff=DB.get('staff',[]);
+  const s=staff.find(x=>x.id===id);
+  if(s){s.status=s.status==='Active'?'Inactive':'Active';DB.set('staff',staff);auditLog(`${s.status==='Active'?'Activated':'Deactivated'} staff ${id}`,'Update');navigate('staff');toast(`${s.name} ${s.status}`);}
+}
+
+function renderCharges(){
+  const ch=DB.get('charges',{consultation:[],beds:[],lab:[],procedures:[]});
+  return `
+    <div class="page-hero"><h1>Master Charges</h1><p>Edit prices — changes save immediately</p></div>
+    <div class="tabs">
+      <div class="tab active" onclick="showTab(this,'ct-consult')">Consultation</div>
+      <div class="tab" onclick="showTab(this,'ct-bed')">Beds</div>
+      <div class="tab" onclick="showTab(this,'ct-lab')">Lab Tests</div>
+      <div class="tab" onclick="showTab(this,'ct-proc')">Procedures</div>
+    </div>
+    <div id="ct-consult" class="charge-tab">
+      <div class="card"><div class="card-header"><span class="card-title">Consultation Charges</span></div>
+      <table><thead><tr><th>Doctor</th><th>OPD Charge</th><th>IPD Charge</th><th>Action</th></tr></thead>
+      <tbody>${ch.consultation.map((c,i)=>`<tr>
+        <td><strong>${c.name}</strong></td>
+        <td><input type="number" value="${c.opd}" id="opd-${i}" style="width:80px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+        <td><input type="number" value="${c.ipd}" id="ipd-${i}" style="width:80px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+        <td><button class="btn btn-blue btn-sm" onclick="saveConsultCharge(${i})">Save</button></td></tr>`).join('')}
+      </tbody></table></div>
+    </div>
+    <div id="ct-bed" class="charge-tab" style="display:none">
+      <div class="card"><div class="card-header"><span class="card-title">Bed Charges (per day)</span></div>
+      <table><thead><tr><th>Type</th><th>Price/Day</th><th>Action</th></tr></thead>
+      <tbody>${ch.beds.map((b,i)=>`<tr>
+        <td><span class="badge badge-purple">${b.type}</span></td>
+        <td><input type="number" value="${b.price}" id="bed-${i}" style="width:100px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+        <td><button class="btn btn-blue btn-sm" onclick="saveBedCharge(${i})">Save</button></td></tr>`).join('')}
+      </tbody></table></div>
+    </div>
+    <div id="ct-lab" class="charge-tab" style="display:none">
+      <div class="card"><div class="card-header"><span class="card-title">Lab Test Charges</span><button class="btn btn-blue btn-sm" onclick="showAddLabChargeModal()">➕ Add Test</button></div>
+      <table><thead><tr><th>Code</th><th>Test Name</th><th>Price</th><th>Action</th></tr></thead>
+      <tbody>${ch.lab.map((t,i)=>`<tr>
+        <td><code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:11px">${t.code}</code></td>
+        <td>${t.name}</td>
+        <td><input type="number" value="${t.price}" id="lab-${i}" style="width:80px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+        <td><button class="btn btn-blue btn-sm" onclick="saveLabCharge(${i})">Save</button></td></tr>`).join('')}
+      </tbody></table></div>
+    </div>
+    <div id="ct-proc" class="charge-tab" style="display:none">
+      <div class="card"><div class="card-header"><span class="card-title">Procedure Charges</span><button class="btn btn-blue btn-sm" onclick="showAddProcModal()">➕ Add</button></div>
+      <table><thead><tr><th>Procedure</th><th>Price</th><th>Action</th></tr></thead>
+      <tbody>${ch.procedures.map((p,i)=>`<tr>
+        <td>${p.name}</td>
+        <td><input type="number" value="${p.price}" id="proc-${i}" style="width:80px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+        <td><button class="btn btn-blue btn-sm" onclick="saveProcCharge(${i})">Save</button></td></tr>`).join('')}
+      </tbody></table></div>
+    </div>`;
+}
+
+function saveConsultCharge(i){const ch=DB.get('charges',{});ch.consultation[i].opd=parseInt(document.getElementById('opd-'+i).value)||0;ch.consultation[i].ipd=parseInt(document.getElementById('ipd-'+i).value)||0;DB.set('charges',ch);auditLog(`Updated consultation charge for ${ch.consultation[i].name}`,'Update');toast('Consultation charge saved!');}
+function saveBedCharge(i){const ch=DB.get('charges',{});ch.beds[i].price=parseInt(document.getElementById('bed-'+i).value)||0;DB.set('charges',ch);auditLog(`Updated bed charge: ${ch.beds[i].type}`,'Update');toast('Bed charge saved!');}
+function saveLabCharge(i){const ch=DB.get('charges',{});ch.lab[i].price=parseInt(document.getElementById('lab-'+i).value)||0;DB.set('charges',ch);auditLog(`Updated lab charge: ${ch.lab[i].name}`,'Update');toast('Lab charge saved!');}
+function saveProcCharge(i){const ch=DB.get('charges',{});ch.procedures[i].price=parseInt(document.getElementById('proc-'+i).value)||0;DB.set('charges',ch);auditLog(`Updated procedure charge: ${ch.procedures[i].name}`,'Update');toast('Procedure charge saved!');}
+
+function showAddLabChargeModal(){
+  showModal('Add Lab Test',`
+    <div class="form-grid">
+      <div class="form-group"><label>Test Code</label><input id="al-code" placeholder="e.g. HBA1C"></div>
+      <div class="form-group"><label>Test Name</label><input id="al-name" placeholder="e.g. HbA1c"></div>
+      <div class="form-group"><label>Price (₹)</label><input id="al-price" type="number" placeholder="350"></div>
+    </div>
+    <div class="form-footer"><button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-blue" onclick="addLabCharge()">Add Test</button></div>`);
+}
+function addLabCharge(){
+  const code=document.getElementById('al-code').value.trim().toUpperCase();
+  const name=document.getElementById('al-name').value.trim();
+  const price=parseInt(document.getElementById('al-price').value)||0;
+  if(!code||!name){alert('Fill all fields');return;}
+  const ch=DB.get('charges',{});
+  ch.lab.push({code,name,price});
+  DB.set('charges',ch);
+  auditLog(`Added lab test: ${name} (${code}) ₹${price}`,'Create');
+  closeModal(); navigate('charges'); toast('Lab test added!');
+}
+
+function showAddProcModal(){
+  showModal('Add Procedure',`
+    <div class="form-grid">
+      <div class="form-group form-full"><label>Procedure Name</label><input id="ap-name" placeholder="e.g. CT Scan Head"></div>
+      <div class="form-group form-full"><label>Price (₹)</label><input id="ap-price" type="number" placeholder="4500"></div>
+    </div>
+    <div class="form-footer"><button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-blue" onclick="addProc()">Add</button></div>`);
+}
+function addProc(){
+  const name=document.getElementById('ap-name').value.trim();
+  const price=parseInt(document.getElementById('ap-price').value)||0;
+  if(!name){alert('Enter procedure name');return;}
+  const ch=DB.get('charges',{});
+  ch.procedures.push({name,price});
+  DB.set('charges',ch);
+  auditLog(`Added procedure: ${name} ₹${price}`,'Create');
+  closeModal(); navigate('charges'); toast('Procedure added!');
+}
+
+function renderAudit(){
+  const logs=DB.get('auditLogs',[]);
+  return `
+    <div class="page-hero"><h1>Audit Logs</h1><p>Every action logged with timestamp and user</p></div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Activity Log (${logs.length})</span>
+        <div class="search-bar"><span>🔎</span><input type="text" placeholder="Search logs..." oninput="filterLogs(this.value)"></div>
+      </div>
+      <div id="audit-list">${logs.map(l=>`<div class="log-line"><span class="log-time">🕐 ${l.time}</span><span class="log-user">${l.user}</span><span class="log-action">${l.action}</span><span class="badge ${l.type==='Create'?'badge-green':l.type==='Billing'?'badge-yellow':'badge-blue'}" style="margin-left:auto;white-space:nowrap">${l.type}</span></div>`).join('')}</div>
+    </div>`;
+}
+function filterLogs(q){
+  const logs=DB.get('auditLogs',[]);
+  const filtered=q?logs.filter(l=>l.action.toLowerCase().includes(q.toLowerCase())||l.user.toLowerCase().includes(q.toLowerCase())):logs;
+  document.getElementById('audit-list').innerHTML=filtered.map(l=>`<div class="log-line"><span class="log-time">🕐 ${l.time}</span><span class="log-user">${l.user}</span><span class="log-action">${l.action}</span><span class="badge ${l.type==='Create'?'badge-green':l.type==='Billing'?'badge-yellow':'badge-blue'}" style="margin-left:auto">${l.type}</span></div>`).join('');
+}
+
+function renderReports(){
+  const pts=DB.get('patients',[]);
+  const bills=DB.get('bills',[]);
+  const labOrders=DB.get('labOrders',[]);
+  const adms=DB.get('admissions',[]);
+  const revenue=bills.filter(b=>b.status==='Paid').reduce((s,b)=>s+b.final,0);
+  return `
+    <div class="page-hero"><h1>System Reports</h1><p>Live analytics from your data</p></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" style="color:#10b981">₹${(revenue/1000).toFixed(1)}K</div></div>
+      <div class="stat-card"><div class="stat-label">Total Patients</div><div class="stat-value" style="color:#3b82f6">${pts.length}</div></div>
+      <div class="stat-card"><div class="stat-label">IPD Admissions</div><div class="stat-value" style="color:#8b5cf6">${adms.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Lab Tests Done</div><div class="stat-value" style="color:#f59e0b">${labOrders.filter(l=>l.status==='Completed').length}</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Patient Type Breakdown</span></div>
+      <div style="padding:20px">
+        ${[['OPD Patients',pts.filter(p=>p.type==='OPD').length,pts.length],['IPD Patients',pts.filter(p=>p.type==='IPD').length,pts.length],['Active',pts.filter(p=>p.status==='Active').length,pts.length],['Discharged',pts.filter(p=>p.status==='Discharged').length,pts.length]].map(([label,val,total])=>`
+        <div style="margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px"><span>${label}</span><strong>${val}</strong></div>
+          <div style="background:var(--surface2);border-radius:4px;height:8px"><div style="background:var(--accent);width:${total?Math.round(val/total*100):0}%;height:100%;border-radius:4px;transition:width 0.5s"></div></div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ===================== RECEPTIONIST =====================
+function renderRegPatient(){
+  const ch=DB.get('charges',{});
+  const doctors=(ch.consultation||[]).map(c=>`<option value="${c.docId}">${c.name}</option>`).join('');
+  return `
+    <div class="page-hero"><h1>Register New Patient</h1><p>All fields marked * are required</p></div>
+    <div id="reg-success" class="alert alert-success" style="display:none">✅ Patient registered! ID: <strong id="new-pid"></strong></div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Patient Information</span></div>
+      <div class="form-grid cols3">
+        <div class="form-group"><label>First Name *</label><input id="rp-fname" placeholder="e.g. Anita"></div>
+        <div class="form-group"><label>Last Name *</label><input id="rp-lname" placeholder="e.g. Joshi"></div>
+        <div class="form-group"><label>Age *</label><input id="rp-age" type="number" placeholder="34"></div>
+        <div class="form-group"><label>Gender *</label><select id="rp-gender"><option>Female</option><option>Male</option><option>Other</option></select></div>
+        <div class="form-group"><label>Phone *</label><input id="rp-phone" placeholder="9876543210"></div>
+        <div class="form-group"><label>Blood Group</label><select id="rp-blood"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option><option>Unknown</option></select></div>
+        <div class="form-group form-full"><label>Address</label><input id="rp-addr" placeholder="Full address"></div>
+        <div class="form-group"><label>Assign Doctor *</label><select id="rp-doc">${doctors||'<option>Dr. Rajesh Mehta</option>'}</select></div>
+        <div class="form-group"><label>Visit Type</label><select id="rp-type"><option>OPD</option><option>IPD</option></select></div>
+        <div class="form-group"><label>Ref. Source</label><select id="rp-ref"><option>Walk-in</option><option>Referred</option><option>Emergency</option></select></div>
+      </div>
+      <div class="form-footer">
+        <button class="btn btn-outline" onclick="navigate('reg-patient')">Clear</button>
+        <button class="btn btn-blue" onclick="registerPatient()">Register Patient →</button>
+      </div>
+    </div>`;
+}
+
+function registerPatient(){
+  const fname=document.getElementById('rp-fname').value.trim();
+  const lname=document.getElementById('rp-lname').value.trim();
+  const age=document.getElementById('rp-age').value;
+  const phone=document.getElementById('rp-phone').value.trim();
+  if(!fname||!lname||!age||!phone){alert('Please fill all required fields');return;}
+  const pts=DB.get('patients',[]);
+  const counter=DB.get('patientCounter',1006);
+  const pid='P'+counter;
+  DB.set('patientCounter',counter+1);
+  const docEl=document.getElementById('rp-doc');
+  const doctorName=docEl.options[docEl.selectedIndex].text;
+  const docId=docEl.value;
+  const type=document.getElementById('rp-type').value;
+  const pt={id:pid,name:fname+' '+lname,age:parseInt(age),gender:document.getElementById('rp-gender').value,phone,address:document.getElementById('rp-addr').value,blood:document.getElementById('rp-blood').value,doctor:docId,doctorName,type,status:'Active',ref:document.getElementById('rp-ref').value,created:new Date().toISOString().slice(0,10)};
+  pts.push(pt);
+  DB.set('patients',pts);
+  auditLog(`Registered patient ${pid} — ${pt.name}`,'Create');
+  document.getElementById('reg-success').style.display='flex';
+  document.getElementById('new-pid').textContent=pid;
+  toast(`Patient ${pt.name} registered! ID: ${pid}`);
+}
+
+function renderOPD(){
+  const appts=DB.get('appointments',[]);
+  return `
+    <div class="page-hero"><h1>OPD Appointments</h1><p>Today's outpatient schedule</p></div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Today — ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long'})}</span>
+        <div style="display:flex;gap:8px">
+          <div class="search-bar"><span>🔎</span><input type="text" placeholder="Search patient..." oninput="filterAppts(this.value)"></div>
+          <button class="btn btn-blue btn-sm" onclick="showNewApptModal()">➕ New Appointment</button>
+        </div>
+      </div>
+      <div id="appt-table">
+        <table><thead><tr><th>Token</th><th>Patient</th><th>Time</th><th>Doctor</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>${appts.map((a,i)=>`<tr>
+          <td><strong>#${String(i+1).padStart(2,'0')}</strong></td>
+          <td><strong>${a.patient}</strong><br><span style="font-size:10px;color:var(--text2)">${a.pid}</span></td>
+          <td>${a.time}</td><td>${a.doctor}</td><td>${a.reason}</td>
+          <td><span class="badge ${a.status==='Waiting'?'badge-yellow':a.status==='In Progress'?'badge-blue':a.status==='Completed'?'badge-green':'badge-green'}">${a.status}</span></td>
+          <td style="display:flex;gap:4px">
+            <select onchange="updateApptStatus('${a.id}',this.value)" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text);font-size:11px">
+              <option ${a.status==='Waiting'?'selected':''}>Waiting</option>
+              <option ${a.status==='In Progress'?'selected':''}>In Progress</option>
+              <option ${a.status==='Completed'?'selected':''}>Completed</option>
+              <option ${a.status==='Scheduled'?'selected':''}>Scheduled</option>
+            </select>
+          </td></tr>`).join('')}
+        </tbody></table>
+      </div>
+    </div>`;
+}
+
+function filterAppts(q){
+  const appts=DB.get('appointments',[]);
+  const filtered=q?appts.filter(a=>a.patient.toLowerCase().includes(q.toLowerCase())||a.pid.toLowerCase().includes(q.toLowerCase())):appts;
+  document.getElementById('appt-table').innerHTML=`<table><thead><tr><th>Token</th><th>Patient</th><th>Time</th><th>Doctor</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead><tbody>${filtered.map((a,i)=>`<tr><td><strong>#${i+1}</strong></td><td><strong>${a.patient}</strong></td><td>${a.time}</td><td>${a.doctor}</td><td>${a.reason}</td><td><span class="badge ${a.status==='Waiting'?'badge-yellow':'badge-green'}">${a.status}</span></td><td></td></tr>`).join('')}</tbody></table>`;
+}
+
+function updateApptStatus(id,status){
+  const appts=DB.get('appointments',[]);
+  const a=appts.find(x=>x.id===id);
+  if(a){a.status=status;DB.set('appointments',appts);auditLog(`Updated appointment ${id} status to ${status}`,'Update');toast(`Status updated to ${status}`);}
+}
+
+function renderIPD(){
+  const adms=DB.get('admissions',[]);
+  return `
+    <div class="page-hero"><h1>IPD Admissions</h1><p>Current inpatient admissions</p></div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Active Admissions (${adms.filter(a=>a.status==='Admitted').length})</span><button class="btn btn-blue btn-sm" onclick="showAdmitModal()">➕ New Admission</button></div>
+      <table><thead><tr><th>Patient</th><th>Doctor</th><th>Bed</th><th>Admit Date</th><th>Days</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>${adms.map(a=>`<tr>
+        <td><strong>${a.patient}</strong><br><span style="font-size:10px;color:var(--text2)">${a.pid}</span></td>
+        <td>${a.doctor}</td>
+        <td><span class="badge badge-blue">${a.bed}</span></td>
+        <td>${a.admitDate}</td>
+        <td>${Math.floor((Date.now()-new Date(a.admitDate))/86400000)+1}</td>
+        <td><span class="badge ${a.status==='Admitted'?'badge-yellow':'badge-green'}">${a.status}</span></td>
+        <td>${a.status==='Admitted'?`<button class="btn btn-outline btn-sm" onclick="dischargePatient('${a.id}')">Discharge</button>`:'<span style="color:var(--text3);font-size:11px">Discharged</span>'}</td></tr>`).join('')}
+      </tbody></table>
+    </div>`;
+}
+
+function dischargePatient(admId){
+  if(!confirm('Confirm discharge?'))return;
+  const adms=DB.get('admissions',[]);
+  const adm=adms.find(a=>a.id===admId);
+  if(adm){
+    adm.status='Discharged';adm.dischargeDate=new Date().toISOString().slice(0,10);
+    DB.set('admissions',adms);
+    // Free the bed
+    const beds=DB.get('beds',[]);
+    const bed=beds.find(b=>b.code===adm.bed);
+    if(bed){bed.status='free';delete bed.patient;DB.set('beds',beds);}
+    // Update patient status
+    const pts=DB.get('patients',[]);
+    const pt=pts.find(p=>p.id===adm.pid);
+    if(pt){pt.status='Discharged';DB.set('patients',pts);}
+    auditLog(`Discharged ${adm.patient} from bed ${adm.bed}`,'Update');
+    navigate('ipd'); toast(`${adm.patient} discharged successfully`);
+  }
+}
+
+function renderBeds(){
+  const beds=DB.get('beds',[]);
+  const occ=beds.filter(b=>b.status==='occupied');
+  const byType=(t)=>beds.filter(b=>b.type===t);
+  return `
+    <div class="page-hero"><h1>Bed Management</h1><p>Click a bed to change its status</p></div>
+    <div class="stats-grid">
+      ${['General','Semi-Private','Private','ICU'].map(t=>{const b=byType(t);const free=b.filter(x=>x.status==='free').length;return `<div class="stat-card"><div class="stat-label">${t}</div><div class="stat-value">${b.length-free}<span style="font-size:13px;color:var(--text2)">/${b.length}</span></div><div class="stat-change" style="color:${free>0?'var(--green)':'var(--red)'}">${free} free</div></div>`}).join('')}
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Bed Map</span><div style="display:flex;gap:12px;font-size:12px"><span style="color:var(--red)">🔴 Occupied</span><span style="color:var(--green)">🟢 Free</span></div></div>
+      <div class="bed-grid">
+        ${beds.map(b=>`<div class="bed-cell ${b.status}" onclick="showBedDetail('${b.code}')">
+          <div class="bed-num">${b.code}</div>
+          <div style="font-size:9px;color:var(--text3)">${b.type.split('-')[0]}</div>
+          <div style="font-size:10px;color:${b.status==='occupied'?'var(--red)':'var(--green)'};margin-top:2px">${b.status==='occupied'?'● '+b.patient.split(' ')[0]:'○ Free'}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function showBedDetail(code){
+  const beds=DB.get('beds',[]);
+  const b=beds.find(x=>x.code===code);
+  const ch=DB.get('charges',{});
+  const price=ch.beds?.find(x=>x.type===b.type)?.price||0;
+  showModal(`Bed ${code}`,`
+    <div style="padding:24px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+        <div style="background:var(--surface2);padding:14px;border-radius:8px"><div style="font-size:10px;color:var(--text2);margin-bottom:4px">TYPE</div><div style="font-weight:600">${b.type}</div></div>
+        <div style="background:var(--surface2);padding:14px;border-radius:8px"><div style="font-size:10px;color:var(--text2);margin-bottom:4px">STATUS</div><div style="font-weight:600;color:${b.status==='occupied'?'var(--red)':'var(--green)'}">${b.status.toUpperCase()}</div></div>
+        <div style="background:var(--surface2);padding:14px;border-radius:8px"><div style="font-size:10px;color:var(--text2);margin-bottom:4px">RATE</div><div style="font-weight:600">₹${price}/day</div></div>
+        <div style="background:var(--surface2);padding:14px;border-radius:8px"><div style="font-size:10px;color:var(--text2);margin-bottom:4px">PATIENT</div><div style="font-weight:600">${b.patient||'—'}</div></div>
+      </div>
+      ${b.status==='free'?`<button class="btn btn-blue" onclick="markBedMaintenance('${code}')">Mark Under Maintenance 🔧</button>`:`<button class="btn btn-outline" onclick="closeModal()">Close</button>`}
+    </div>`);
+}
+
+function markBedMaintenance(code){
+  const beds=DB.get('beds',[]);
+  const b=beds.find(x=>x.code===code);
+  if(b){b.status=b.status==='maintenance'?'free':'maintenance';DB.set('beds',beds);auditLog(`Bed ${code} marked ${b.status}`,'Update');closeModal();navigate('beds');toast(`Bed ${code} → ${b.status}`);}
+}
+
+function renderSearch(){
+  const pts=DB.get('patients',[]);
+  return `
+    <div class="page-hero"><h1>Patient Search</h1><p>Search across all patient records</p></div>
+    <div style="margin-bottom:16px">
+      <div class="search-bar" style="width:100%"><span>🔎</span><input type="text" placeholder="Search by name, ID, phone..." oninput="searchPatients(this.value)"></div>
+    </div>
+    <div class="card" id="search-results">
+      <table><thead><tr><th>ID</th><th>Name</th><th>Age/Gender</th><th>Phone</th><th>Doctor</th><th>Type</th><th>Status</th><th></th></tr></thead>
+      <tbody>${renderPatientRows(pts)}</tbody></table>
+    </div>`;
+}
+function renderPatientRows(pts){
+  return pts.map(p=>`<tr>
+    <td><code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:11px">${p.id}</code></td>
+    <td><strong>${p.name}</strong></td><td>${p.age} / ${p.gender[0]}</td><td>${p.phone}</td>
+    <td style="font-size:11px">${p.doctorName||'—'}</td>
+    <td><span class="badge ${p.type==='OPD'?'badge-cyan':'badge-purple'}">${p.type}</span></td>
+    <td><span class="badge ${p.status==='Active'?'badge-green':p.status==='Admitted'?'badge-yellow':'badge-red'}">${p.status}</span></td>
+    <td><button class="btn btn-outline btn-sm" onclick="showPatientDetail('${p.id}')">View</button></td></tr>`).join('');
+}
+function searchPatients(q){
+  const pts=DB.get('patients',[]);
+  const f=q?pts.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.id.toLowerCase().includes(q.toLowerCase())||p.phone.includes(q)):pts;
+  document.querySelector('#search-results tbody').innerHTML=renderPatientRows(f);
+}
+function showPatientDetail(pid){
+  const pt=DB.get('patients',[]).find(p=>p.id===pid);
+  if(!pt)return;
+  showModal(`Patient — ${pt.name}`,`
+    <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      ${[['Patient ID',pt.id],['Name',pt.name],['Age',pt.age],['Gender',pt.gender],['Phone',pt.phone],['Blood Group',pt.blood],['Address',pt.address||'—'],['Doctor',pt.doctorName||'—'],['Visit Type',pt.type],['Status',pt.status],['Registered',pt.created]].map(([k,v])=>`<div style="background:var(--surface2);padding:10px;border-radius:8px"><div style="font-size:10px;color:var(--text2);margin-bottom:3px">${k}</div><div style="font-size:13px;font-weight:600">${v}</div></div>`).join('')}
+    </div>
+    <div class="form-footer"><button class="btn btn-outline" onclick="closeModal()">Close</button></div>`);
+}
+
+// ===================== DOCTOR =====================
+function renderMyPatients(){
+  const pts=DB.get('patients',[]).filter(p=>p.doctor==='DR104');
+  return `
+    <div class="page-hero"><h1>My Patients</h1><p>All patients assigned to you</p></div>
+    <div class="card">
+      <table><thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>${pts.map(p=>`<tr>
+        <td><code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:11px">${p.id}</code></td>
+        <td><strong>${p.name}</strong></td><td>${p.age}</td>
+        <td><span class="badge ${p.type==='OPD'?'badge-cyan':'badge-purple'}">${p.type}</span></td>
+        <td><span class="badge ${p.status==='Active'?'badge-green':p.status==='Admitted'?'badge-yellow':'badge-red'}">${p.status}</span></td>
+        <td style="display:flex;gap:4px">
+          <button class="btn btn-blue btn-sm" onclick="showPrescriptionModal('${p.name}','${p.id}')">Prescribe</button>
+          <button class="btn btn-outline btn-sm" onclick="showPatientDetail('${p.id}')">View</button>
+        </td></tr>`).join('')}
+      </tbody></table>
+    </div>`;
+}
+
+function renderPrescriptions(){
+  const rxs=DB.get('prescriptions',[]);
+  return `
+    <div class="page-hero"><h1>Prescriptions</h1><p>All prescription records</p></div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Prescriptions (${rxs.length})</span><button class="btn btn-blue btn-sm" onclick="showPrescriptionModal('','')">➕ New</button></div>
+      <table><thead><tr><th>ID</th><th>Patient</th><th>Date</th><th>Diagnosis</th><th>Medications</th><th>Follow-up</th></tr></thead>
+      <tbody>${rxs.map(r=>`<tr>
+        <td><code style="background:var(--surface2);padding:2px 5px;border-radius:4px;font-size:10px">${r.id}</code></td>
+        <td><strong>${r.patient}</strong></td><td>${r.date}</td>
+        <td>${r.diagnosis}</td>
+        <td style="font-size:11px;color:var(--text2)">${r.meds.split('\n')[0]}${r.meds.split('\n').length>1?'...':''}</td>
+        <td>${r.followup||'—'}</td></tr>`).join('')}
+      </tbody></table>
+    </div>`;
+}
+
+function renderIPDNotes(){
+  const adms=DB.get('admissions',[]).filter(a=>a.status==='Admitted');
+  const notes=DB.get('ipdNotes',[]);
+  return `
+    <div class="page-hero"><h1>IPD Progress Notes</h1><p>Daily clinical notes for admitted patients</p></div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Add Note</span></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Patient</label><select id="note-adm">${adms.map(a=>`<option value="${a.id}">${a.patient} — ${a.bed}</option>`).join('')||'<option>No admitted patients</option>'}</select></div>
+        <div class="form-group"><label>Date</label><input type="date" id="note-date" value="${new Date().toISOString().slice(0,10)}"></div>
+        <div class="form-group form-full"><label>Clinical Observations</label><textarea id="note-obs" placeholder="Vitals, condition, response to treatment..."></textarea></div>
+        <div class="form-group form-full"><label>Plan / Instructions</label><textarea id="note-plan" placeholder="Continue medications, order tests, change dosage..."></textarea></div>
+      </div>
+      <div class="form-footer"><button class="btn btn-blue" onclick="saveIPDNote()">Save Note 📝</button></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Previous Notes</span></div>
+      <div style="padding:4px 0">
+        ${notes.map(n=>`<div style="padding:16px 22px;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <span style="font-weight:600">${n.patient}</span>
+            <span style="font-size:11px;color:var(--text2)">${n.date} · ${n.doctor}</span>
+          </div>
+          <div style="border-left:3px solid var(--accent);padding-left:12px">
+            <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Observations</div>
+            <p style="font-size:13px;margin-bottom:8px">${n.observations}</p>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Plan</div>
+            <p style="font-size:13px">${n.plan}</p>
+          </div>
+        </div>`).join('')||'<div style="padding:20px;text-align:center;color:var(--text2)">No notes yet</div>'}
+      </div>
+    </div>`;
+}
+
+function saveIPDNote(){
+  const admId=document.getElementById('note-adm').value;
+  const obs=document.getElementById('note-obs').value.trim();
+  const plan=document.getElementById('note-plan').value.trim();
+  const date=document.getElementById('note-date').value;
+  if(!obs){alert('Enter observations');return;}
+  const adms=DB.get('admissions',[]);
+  const adm=adms.find(a=>a.id===admId);
+  if(!adm)return;
+  const notes=DB.get('ipdNotes',[]);
+  const note={id:'N'+Date.now(),admId,pid:adm.pid,patient:adm.patient,doctor:'Dr. Rajesh Mehta',date,observations:obs,plan};
+  notes.unshift(note);
+  DB.set('ipdNotes',notes);
+  auditLog(`Added IPD note for ${adm.patient}`,'Update');
+  navigate('ipd-notes'); toast('Progress note saved!');
+}
+
+function renderLabResults(){
+  const labs=DB.get('labOrders',[]);
+  return `
+    <div class="page-hero"><h1>Lab Reports</h1><p>Test results for your patients</p></div>
+    <div class="card">
+      <table><thead><tr><th>Patient</th><th>Test</th><th>Date</th><th>Result</th><th>Status</th></tr></thead>
+      <tbody>${labs.map(l=>`<tr>
+        <td><strong>${l.patient}</strong></td><td>${l.test}</td><td>${l.date}</td>
+        <td>${l.result||'—'}</td>
+        <td><span class="badge ${l.status==='Completed'?'badge-green':l.status==='In Progress'?'badge-blue':'badge-yellow'}">${l.status}</span></td></tr>`).join('')}
+      </tbody></table>
+    </div>`;
+}
+
+// ===================== LAB =====================
+function renderPendingTests(){
+  const labs=DB.get('labOrders',[]).filter(l=>l.status!=='Completed');
+  return `
+    <div class="page-hero"><h1>Pending Tests</h1><p>${labs.length} tests awaiting processing</p></div>
+    <div class="card">
+      <table><thead><tr><th>ID</th><th>Patient</th><th>Test</th><th>Ordered</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>${labs.length?labs.map(l=>`<tr>
+        <td>${l.id}</td><td><strong>${l.patient}</strong></td><td>${l.test}</td><td>${l.ordered}</td>
+        <td><span class="badge ${l.status==='In Progress'?'badge-blue':'badge-yellow'}">${l.status}</span></td>
+        <td><button class="btn btn-blue btn-sm" onclick="showLabResultModal('${l.id}')">Enter Result</button></td></tr>`).join(''):'<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text2)">No pending tests ✅</td></tr>'}
+      </tbody></table>
+    </div>`;
+}
+
+function renderUploadResults(){
+  const pts=DB.get('patients',[]);
+  const ch=DB.get('charges',{});
+  return `
+    <div class="page-hero"><h1>Upload Test Results</h1><p>Enter result and charge is auto-applied</p></div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">New Lab Result</span></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Patient *</label><select id="ur-pat">${pts.map(p=>`<option value="${p.id}">${p.name} — ${p.id}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Test *</label><select id="ur-test">${(ch.lab||[]).map(t=>`<option value="${t.code}" data-price="${t.price}">${t.name} (₹${t.price})</option>`).join('')}</select></div>
+        <div class="form-group form-full"><label>Result Text *</label><textarea id="ur-result" placeholder="Enter test result values and reference ranges..."></textarea></div>
+      </div>
+      <div style="padding:0 20px 16px;font-size:12px;color:var(--green)">⚡ Charge will be auto-applied to patient billing on submission</div>
+      <div class="form-footer"><button class="btn btn-blue" onclick="submitLabResult()">Submit & Apply Charge</button></div>
+    </div>`;
+}
+
+function submitLabResult(){
+  const patSel=document.getElementById('ur-pat');
+  const testSel=document.getElementById('ur-test');
+  const result=document.getElementById('ur-result').value.trim();
+  if(!result){alert('Enter result text');return;}
+  const pid=patSel.value;
+  const patName=patSel.options[patSel.selectedIndex].text.split(' — ')[0];
+  const testCode=testSel.value;
+  const testName=testSel.options[testSel.selectedIndex].text.split(' (')[0];
+  const price=parseInt(testSel.options[testSel.selectedIndex].dataset.price)||0;
+  const labs=DB.get('labOrders',[]);
+  const counter=DB.get('labCounter',10);
+  DB.set('labCounter',counter+1);
+  labs.push({id:'L'+String(counter).padStart(3,'0'),pid,patient:patName,test:testName,code:testCode,price,ordered:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),status:'Completed',result,date:new Date().toISOString().slice(0,10)});
+  DB.set('labOrders',labs);
+  auditLog(`Uploaded lab result: ${testName} for ${patName}`,'Update');
+  navigate('test-history'); toast(`Result submitted! ₹${price} charge applied`);
+}
+
+function renderTestHistory(){
+  const labs=DB.get('labOrders',[]).filter(l=>l.status==='Completed');
+  return `
+    <div class="page-hero"><h1>Test History</h1><p>All completed lab tests</p></div>
+    <div class="card">
+      <table><thead><tr><th>ID</th><th>Patient</th><th>Test</th><th>Date</th><th>Result</th><th>Charge</th></tr></thead>
+      <tbody>${labs.length?labs.map(l=>`<tr>
+        <td>${l.id}</td><td><strong>${l.patient}</strong></td><td>${l.test}</td><td>${l.date}</td>
+        <td style="font-size:12px">${l.result||'—'}</td><td style="color:var(--green)">₹${l.price} ✅</td></tr>`).join(''):'<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text2)">No completed tests yet</td></tr>'}
+      </tbody></table>
+    </div>`;
+}
+
+// ===================== BILLING =====================
+function renderGenerateBill(){
+  const pts=DB.get('patients',[]);
+  return `
+    <div class="page-hero"><h1>Generate Invoice</h1><p>Auto-accumulated charges per patient</p></div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:20px;align-items:end">
+      <div class="form-group" style="margin:0"><label>Select Patient</label><select id="bill-pat">${pts.map(p=>`<option value="${p.id}">${p.name} — ${p.id} (${p.type})</option>`).join('')}</select></div>
+      <button class="btn btn-blue" onclick="loadPatientCharges()">Load Charges</button>
+    </div>
+    <div id="bill-area"></div>`;
+}
+
+function loadPatientCharges(){
+  const pid=document.getElementById('bill-pat').value;
+  const pts=DB.get('patients',[]);
+  const pt=pts.find(p=>p.id===pid);
+  const labs=DB.get('labOrders',[]).filter(l=>l.pid===pid&&l.status==='Completed');
+  const adms=DB.get('admissions',[]).filter(a=>a.pid===pid);
+  const ch=DB.get('charges',{});
+  const existingBills=DB.get('bills',[]).filter(b=>b.pid===pid&&b.status==='Pending');
+
+  // Build charge lines
+  const charges=[];
+  const consult=ch.consultation?.find(c=>c.docId===pt?.doctor);
+  if(consult) charges.push({desc:`Consultation (${pt.type})`,amt:pt.type==='OPD'?consult.opd:consult.ipd});
+  adms.forEach(a=>{
+    const days=Math.floor((Date.now()-new Date(a.admitDate))/86400000)+1;
+    const bedPrice=ch.beds?.find(b=>b.type===a.bedType)?.price||0;
+    charges.push({desc:`${a.bedType} Bed (${days} days × ₹${bedPrice})`,amt:days*bedPrice});
+  });
+  labs.forEach(l=>charges.push({desc:`Lab — ${l.test}`,amt:l.price}));
+  const subtotal=charges.reduce((s,c)=>s+c.amt,0);
+
+  document.getElementById('bill-area').innerHTML=`
+    <div class="card">
+      <div class="card-header"><span class="card-title">Charges — ${pt?.name}</span><span class="badge badge-yellow">Pending</span></div>
+      <div style="padding:20px">
+        ${charges.map(c=>`<div class="bill-line"><span>${c.desc}</span><span>₹${c.amt.toLocaleString('en-IN')}</span></div>`).join('')}
+        <div class="bill-line"><span style="font-weight:600">Sub Total</span><span style="font-weight:600">₹${subtotal.toLocaleString('en-IN')}</span></div>
+        <div class="bill-line">
+          <span>Discount</span>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="number" id="disc-val" value="0" min="0" style="width:70px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-size:12px" oninput="updateFinal(${subtotal})">
+            <select id="disc-type" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-size:12px" onchange="updateFinal(${subtotal})"><option>₹</option><option>%</option></select>
+          </div>
+        </div>
+        <div class="bill-total"><span>FINAL AMOUNT</span><span id="final-amt">₹${subtotal.toLocaleString('en-IN')}</span></div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn btn-blue" onclick="generateBill('${pid}','${pt?.name}',${subtotal})">Generate Invoice 🧾</button>
+          <button class="btn btn-green" onclick="generateBill('${pid}','${pt?.name}',${subtotal},true)">Generate & Mark Paid ✅</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function updateFinal(sub){
+  const d=parseFloat(document.getElementById('disc-val').value)||0;
+  const type=document.getElementById('disc-type').value;
+  const disc=type==='%'?sub*(d/100):d;
+  const final=Math.max(0,sub-disc);
+  document.getElementById('final-amt').textContent='₹'+final.toLocaleString('en-IN');
+}
+
+function generateBill(pid,name,subtotal,markPaid=false){
+  const d=parseFloat(document.getElementById('disc-val').value)||0;
+  const type=document.getElementById('disc-type').value;
+  const disc=type==='%'?subtotal*(d/100):d;
+  const final=Math.max(0,subtotal-disc);
+  const counter=DB.get('billCounter',246);
+  DB.set('billCounter',counter+1);
+  const billId='BILL-'+String(counter).padStart(4,'0');
+  const bills=DB.get('bills',[]);
+  bills.push({id:billId,pid,patient:name,date:new Date().toISOString().slice(0,10),subtotal,discount:disc,final,status:markPaid?'Paid':'Pending',mode:markPaid?'Cash':null});
+  DB.set('bills',bills);
+  auditLog(`Generated invoice ${billId} for ${name} ₹${final}`,'Billing');
+  navigate('payment-status'); toast(`Invoice ${billId} created! ₹${final.toLocaleString('en-IN')}`);
+}
+
+function renderPaymentStatus(){
+  const bills=DB.get('bills',[]);
+  return `
+    <div class="page-hero"><h1>Payment Status</h1><p>All invoices and payment tracking</p></div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">All Invoices (${bills.length})</span></div>
+      <table><thead><tr><th>Invoice #</th><th>Patient</th><th>Date</th><th>Amount</th><th>Discount</th><th>Final</th><th>Status</th><th></th></tr></thead>
+      <tbody>${bills.length?[...bills].reverse().map(b=>`<tr>
+        <td>${b.id}</td><td><strong>${b.patient}</strong></td><td>${b.date}</td>
+        <td>₹${b.subtotal.toLocaleString('en-IN')}</td>
+        <td>${b.discount?'₹'+b.discount.toLocaleString('en-IN'):'—'}</td>
+        <td><strong>₹${b.final.toLocaleString('en-IN')}</strong></td>
+        <td><span class="badge ${b.status==='Paid'?'badge-green':'badge-yellow'}">${b.status}</span></td>
+        <td>${b.status==='Pending'?`<button class="btn btn-green btn-sm" onclick="markPaid('${b.id}')">Collect ✅</button>`:'<span style="color:var(--text3);font-size:11px">Paid ✓</span>'}</td></tr>`).join(''):'<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text2)">No invoices yet</td></tr>'}
+      </tbody></table>
+    </div>`;
+}
+
+function markPaid(billId){
+  const bills=DB.get('bills',[]);
+  const b=bills.find(x=>x.id===billId);
+  if(b){b.status='Paid';b.mode='Cash';b.paidAt=new Date().toISOString();DB.set('bills',bills);auditLog(`Payment collected for ${billId} — ${b.patient} ₹${b.final}`,'Billing');navigate('payment-status');toast(`₹${b.final.toLocaleString('en-IN')} collected for ${b.patient}`);}
+}
+
+function renderChargesView(){
+  const ch=DB.get('charges',{});
+  return `
+    <div class="page-hero"><h1>Charge Summary</h1><p>Current rates (read-only for billing)</p></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Lab Tests</div><div class="stat-value" style="color:#06b6d4">${(ch.lab||[]).length}</div></div>
+      <div class="stat-card"><div class="stat-label">Procedures</div><div class="stat-value" style="color:#8b5cf6">${(ch.procedures||[]).length}</div></div>
+      <div class="stat-card"><div class="stat-label">Bed Types</div><div class="stat-value" style="color:#10b981">${(ch.beds||[]).length}</div></div>
+      <div class="stat-card"><div class="stat-label">Doctors</div><div class="stat-value" style="color:#f59e0b">${(ch.consultation||[]).length}</div></div>
+    </div>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+        <div style="border-right:1px solid var(--border);padding:18px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Lab Tests</div>
+          ${(ch.lab||[]).map(t=>`<div class="bill-line" style="font-size:12px"><span>${t.name}</span><span>₹${t.price}</span></div>`).join('')}
+        </div>
+        <div style="padding:18px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Procedures & Beds</div>
+          ${(ch.procedures||[]).map(p=>`<div class="bill-line" style="font-size:12px"><span>${p.name}</span><span>₹${p.price}</span></div>`).join('')}
+          ${(ch.beds||[]).map(b=>`<div class="bill-line" style="font-size:12px"><span>${b.type} Bed /day</span><span>₹${b.price}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ===================== MODALS =====================
+function showPrescriptionModal(patient,pid){
+  const pts=DB.get('patients',[]);
+  const ptOpts=pts.map(p=>`<option value="${p.id}" ${p.id===pid?'selected':''}>${p.name} — ${p.id}</option>`).join('');
+  showModal('New Prescription',`
+    <div class="form-grid">
+      <div class="form-group form-full"><label>Patient *</label><select id="rx-pat">${ptOpts}</select></div>
+      <div class="form-group form-full"><label>Diagnosis *</label><input id="rx-diag" placeholder="e.g. Upper Respiratory Tract Infection"></div>
+      <div class="form-group form-full"><label>Medications (one per line) *</label><textarea id="rx-meds" rows="4" placeholder="Amoxicillin 500mg — 3x/day for 5 days&#10;Paracetamol 650mg — as needed"></textarea></div>
+      <div class="form-group form-full"><label>Special Instructions</label><input id="rx-inst" placeholder="e.g. Avoid cold food, rest, drink fluids"></div>
+      <div class="form-group"><label>Follow-up Date</label><input type="date" id="rx-fu"></div>
+    </div>
+    <div class="form-footer"><button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-blue" onclick="savePrescription()">Save Prescription 💊</button></div>`);
+}
+
+function savePrescription(){
+  const patSel=document.getElementById('rx-pat');
+  const diag=document.getElementById('rx-diag').value.trim();
+  const meds=document.getElementById('rx-meds').value.trim();
+  if(!diag||!meds){alert('Fill diagnosis and medications');return;}
+  const pid=patSel.value;
+  const patName=patSel.options[patSel.selectedIndex].text.split(' — ')[0];
+  const rxs=DB.get('prescriptions',[]);
+  rxs.unshift({id:'RX'+Date.now(),pid,patient:patName,doctor:'Dr. Rajesh Mehta',diagnosis:diag,meds,instructions:document.getElementById('rx-inst').value,followup:document.getElementById('rx-fu').value,date:new Date().toISOString().slice(0,10)});
+  DB.set('prescriptions',rxs);
+  auditLog(`Added prescription for ${patName}`,'Update');
+  closeModal(); toast(`Prescription saved for ${patName}`);
+}
+
+function showLabResultModal(labId){
+  const labs=DB.get('labOrders',[]);
+  const lab=labs.find(l=>l.id===labId);
+  if(!lab)return;
+  showModal(`Enter Result — ${lab.test}`,`
+    <div class="form-grid">
+      <div class="form-group form-full"><label>Patient</label><input value="${lab.patient}" readonly style="opacity:0.7"></div>
+      <div class="form-group form-full"><label>Test</label><input value="${lab.test}" readonly style="opacity:0.7"></div>
+      <div class="form-group form-full"><label>Result *</label><textarea id="lr-result" placeholder="Enter values and reference ranges..."></textarea></div>
+    </div>
+    <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:10px 14px;margin:0 20px 4px;font-size:12px;color:var(--green)">⚡ Charge of ₹${lab.price} will be auto-applied to patient bill</div>
+    <div class="form-footer"><button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-blue" onclick="saveLabResult('${labId}')">Submit & Apply Charge</button></div>`);
+}
+
+function saveLabResult(labId){
+  const result=document.getElementById('lr-result').value.trim();
+  if(!result){alert('Enter result');return;}
+  const labs=DB.get('labOrders',[]);
+  const lab=labs.find(l=>l.id===labId);
+  if(lab){lab.status='Completed';lab.result=result;DB.set('labOrders',labs);auditLog(`Uploaded result: ${lab.test} for ${lab.patient}`,'Update');closeModal();navigate('dashboard');toast(`Result saved! ₹${lab.price} charge auto-applied`);}
+}
+
+function showNewApptModal(){
+  const pts=DB.get('patients',[]);
+  const ch=DB.get('charges',{});
+  const doctors=(ch.consultation||[]).map(c=>`<option>${c.name}</option>`).join('');
+  showModal('New OPD Appointment',`
+    <div class="form-grid">
+      <div class="form-group form-full"><label>Patient *</label><select id="na-pat">${pts.map(p=>`<option value="${p.id}">${p.name} — ${p.id}</option>`).join('')}</select></div>
+      <div class="form-group"><label>Doctor *</label><select id="na-doc">${doctors||'<option>Dr. Rajesh Mehta</option>'}</select></div>
+      <div class="form-group"><label>Time Slot *</label><select id="na-time"><option>09:00</option><option>09:30</option><option>10:00</option><option>10:30</option><option>11:00</option><option>11:30</option><option>12:00</option><option>14:00</option><option>14:30</option><option>15:00</option></select></div>
+      <div class="form-group form-full"><label>Reason for Visit *</label><input id="na-reason" placeholder="e.g. Fever, Chest pain, Follow-up..."></div>
+    </div>
+    <div class="form-footer"><button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-blue" onclick="saveAppointment()">Create Appointment</button></div>`);
+}
+
+function saveAppointment(){
+  const patSel=document.getElementById('na-pat');
+  const reason=document.getElementById('na-reason').value.trim();
+  if(!reason){alert('Enter reason for visit');return;}
+  const pid=patSel.value;
+  const patName=patSel.options[patSel.selectedIndex].text.split(' — ')[0];
+  const appts=DB.get('appointments',[]);
+  appts.push({id:'A'+Date.now(),pid,patient:patName,time:document.getElementById('na-time').value,doctor:document.getElementById('na-doc').value,reason,status:'Waiting',date:new Date().toISOString().slice(0,10)});
+  DB.set('appointments',appts);
+  auditLog(`Created OPD appointment for ${patName}`,'Create');
+  closeModal(); navigate('opd'); toast(`Appointment created for ${patName}`);
+}
+
+function showAdmitModal(){
+  const pts=DB.get('patients',[]).filter(p=>p.status!=='Admitted');
+  const beds=DB.get('beds',[]).filter(b=>b.status==='free');
+  const ch=DB.get('charges',{});
+  const doctors=(ch.consultation||[]).map(c=>`<option>${c.name}</option>`).join('');
+  showModal('New IPD Admission',`
+    <div class="form-grid">
+      <div class="form-group form-full"><label>Patient *</label><select id="ai-pat">${pts.map(p=>`<option value="${p.id}">${p.name} — ${p.id}</option>`).join('')}</select></div>
+      <div class="form-group"><label>Doctor *</label><select id="ai-doc">${doctors||'<option>Dr. Rajesh Mehta</option>'}</select></div>
+      <div class="form-group"><label>Bed *</label><select id="ai-bed">${beds.map(b=>`<option value="${b.code}" data-type="${b.type}">${b.code} (${b.type})</option>`).join('')||'<option>No free beds</option>'}</select></div>
+      <div class="form-group"><label>Admit Date</label><input type="date" id="ai-date" value="${new Date().toISOString().slice(0,10)}"></div>
+      <div class="form-group form-full"><label>Reason for Admission *</label><textarea id="ai-reason" placeholder="Primary complaint..."></textarea></div>
+    </div>
+    <div class="form-footer"><button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-blue" onclick="admitPatient()">Admit Patient 🛏️</button></div>`);
+}
+
+function admitPatient(){
+  const patSel=document.getElementById('ai-pat');
+  const bedSel=document.getElementById('ai-bed');
+  const reason=document.getElementById('ai-reason').value.trim();
+  if(!reason){alert('Enter reason');return;}
+  const pid=patSel.value;
+  const patName=patSel.options[patSel.selectedIndex].text.split(' — ')[0];
+  const bedCode=bedSel.value;
+  const bedType=bedSel.options[bedSel.selectedIndex].dataset.type;
+  const admitDate=document.getElementById('ai-date').value;
+
+  // Mark bed occupied
+  const beds=DB.get('beds',[]);
+  const bed=beds.find(b=>b.code===bedCode);
+  if(bed){bed.status='occupied';bed.patient=patName;DB.set('beds',beds);}
+
+  // Update patient status
+  const pts=DB.get('patients',[]);
+  const pt=pts.find(p=>p.id===pid);
+  if(pt){pt.status='Admitted';pt.bed=bedCode;DB.set('patients',pts);}
+
+  // Create admission
+  const adms=DB.get('admissions',[]);
+  adms.push({id:'ADM'+Date.now(),pid,patient:patName,doctor:document.getElementById('ai-doc').value,bed:bedCode,bedType,admitDate,status:'Admitted',reason});
+  DB.set('admissions',adms);
+  auditLog(`Admitted ${patName} to bed ${bedCode}`,'Create');
+  closeModal(); navigate('ipd'); toast(`${patName} admitted to bed ${bedCode}`);
+}
+
+// ===================== STAFF CREATION =====================
+const rolePrefixes={receptionist:'REC',doctor:'DR',lab:'LAB',billing:'BIL'};
+const roleColors={receptionist:'#10b981',doctor:'#8b5cf6',lab:'#06b6d4',billing:'#f59e0b'};
+
+function showCreateStaffModal(){
+  showModal('Create New Staff Login',`
+    <div style="padding:0 20px 8px;margin-top:4px;font-size:12px;color:var(--text2)">Username and password are auto-generated from role and counter</div>
+    <div class="form-grid">
+      <div class="form-group"><label>First Name *</label><input id="cs-fname" placeholder="e.g. Priya" oninput="updatePreview()"></div>
+      <div class="form-group"><label>Last Name *</label><input id="cs-lname" placeholder="e.g. Sharma" oninput="updatePreview()"></div>
+      <div class="form-group"><label>Role *</label><select id="cs-role" onchange="updatePreview()"><option value="receptionist">Receptionist</option><option value="doctor">Consulting Doctor</option><option value="lab">Lab Staff</option><option value="billing">Billing Staff</option></select></div>
+      <div class="form-group" id="cs-spec-wrap" style="display:none"><label>Specialization</label><input id="cs-spec" placeholder="e.g. Cardiology"></div>
+      <div class="form-group"><label>Phone</label><input id="cs-phone" placeholder="9XXXXXXXXX"></div>
+    </div>
+    <div id="cs-preview" style="margin:0 20px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:10px">📋 Credentials Preview</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px"><div style="font-size:9px;color:var(--text2);margin-bottom:3px;text-transform:uppercase">Username</div><div id="prev-username" style="font-size:18px;font-weight:700;font-family:monospace;color:var(--accent2)">REC103</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px"><div style="font-size:9px;color:var(--text2);margin-bottom:3px;text-transform:uppercase">Password</div><div id="prev-password" style="font-size:18px;font-weight:700;font-family:monospace;color:var(--green)">REC103@2026</div></div>
+      </div>
+    </div>
+    <div class="alert alert-warning" style="margin:0 20px 4px">⚠️ Staff must change password on first login</div>
+    <div class="form-footer"><button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-blue" onclick="createStaffLogin()">Create Login ✅</button></div>`);
+  updatePreview();
+}
+
+function updatePreview(){
+  const role=document.getElementById('cs-role')?.value||'receptionist';
+  const counters=DB.get('staffCounters',{receptionist:103,doctor:106,lab:202,billing:302});
+  const prefix=rolePrefixes[role]||'USR';
+  const uname=`${prefix}${counters[role]||100}`;
+  if(document.getElementById('prev-username')){
+    document.getElementById('prev-username').textContent=uname;
+    document.getElementById('prev-password').textContent=`${uname}@2026`;
+  }
+  const specWrap=document.getElementById('cs-spec-wrap');
+  if(specWrap)specWrap.style.display=role==='doctor'?'block':'none';
+}
+
+function createStaffLogin(){
+  const fname=document.getElementById('cs-fname')?.value?.trim();
+  const lname=document.getElementById('cs-lname')?.value?.trim();
+  const role=document.getElementById('cs-role')?.value;
+  const phone=document.getElementById('cs-phone')?.value?.trim();
+  const spec=document.getElementById('cs-spec')?.value?.trim();
+  if(!fname||!lname){alert('Enter first and last name');return;}
+
+  const counters=DB.get('staffCounters',{receptionist:103,doctor:106,lab:202,billing:302});
+  const prefix=rolePrefixes[role]||'USR';
+  const uname=`${prefix}${counters[role]||100}`;
+  const pass=`${uname}@2026`;
+  const color=roleColors[role]||'#8b949e';
+  const initials=(fname[0]+lname[0]).toUpperCase();
+  const roleLabel={receptionist:'Receptionist',doctor:'Consulting Doctor',lab:'Lab Staff',billing:'Billing Staff'}[role];
+
+  // Increment counter
+  counters[role]=(counters[role]||100)+1;
+  DB.set('staffCounters',counters);
+
+  // Save to staff list
+  const staff=DB.get('staff',[]);
+  staff.push({id:uname,name:(role==='doctor'?'Dr. ':'')+fname+' '+lname,role:roleLabel,spec:spec||'',phone:phone||'—',status:'Active',created:new Date().toISOString().slice(0,10)});
+  DB.set('staff',staff);
+
+  // Save login credentials
+  const passwords=DB.get('passwords',{});
+  passwords[uname]=pass;
+  DB.set('passwords',passwords);
+
+  // Save to extra users so they can log in
+  const extraUsers=DB.get('extraUsers',{});
+  extraUsers[uname]={role,name:(role==='doctor'?'Dr. ':'')+fname+' '+lname,color,bg:`rgba(${color.slice(1).match(/../g).map(h=>parseInt(h,16)).join(',')},0.2)`};
+  DB.set('extraUsers',extraUsers);
+
+  // Mark as first login
+  const fl=DB.get('firstLogins',{});
+  fl[uname]=true;
+  DB.set('firstLogins',fl);
+
+  auditLog(`Created login for ${fname} ${lname} (${roleLabel}) — ID: ${uname}`,'Create');
+
+  // Show credential card
+  showModal('✅ Login Created Successfully',`
+    <div style="background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(37,99,235,0.08));border-bottom:1px solid var(--border);padding:24px;text-align:center">
+      <div style="width:56px;height:56px;background:rgba(16,185,129,0.15);border:2px solid var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;margin:0 auto 10px;color:var(--green)">${initials}</div>
+      <div style="font-size:17px;font-weight:700">${fname} ${lname}</div>
+      <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--green);margin-top:6px">● ${roleLabel}</div>
+    </div>
+    <div style="padding:20px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:12px">🔐 Login Credentials — Share with Staff</div>
+      <div style="background:var(--surface2);border:2px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)">
+          <div><div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Username</div><div style="font-size:22px;font-weight:800;font-family:monospace;color:var(--accent2);letter-spacing:2px">${uname}</div></div>
+          <button onclick="copyText('${uname}','cbtu')" id="cbtu" style="background:rgba(37,99,235,0.15);border:1px solid rgba(37,99,235,0.3);border-radius:7px;padding:7px 12px;color:var(--accent2);font-size:11px;font-weight:600;cursor:pointer">📋 Copy</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px">
+          <div><div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Default Password</div><div style="font-size:22px;font-weight:800;font-family:monospace;color:var(--green);letter-spacing:2px">${pass}</div></div>
+          <button onclick="copyText('${pass}','cbtp')" id="cbtp" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:7px;padding:7px 12px;color:var(--green);font-size:11px;font-weight:600;cursor:pointer">📋 Copy</button>
+        </div>
+      </div>
+      <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:8px;padding:10px 13px;font-size:12px;color:var(--yellow);margin-bottom:14px">⚠️ Staff will be forced to set a new password on their very first login.</div>
+      <button onclick="copyAllCreds('${uname}','${pass}','${fname} ${lname}','${roleLabel}')" id="btn-copy-all" style="width:100%;background:var(--accent);border:none;border-radius:8px;padding:11px;color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px">📋 Copy All Credentials</button>
+      <button onclick="closeModal();navigate('staff')" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text2);font-family:inherit;font-size:12px;cursor:pointer">View Staff List →</button>
+    </div>`);
+}
+
+function copyText(text,btnId){
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.getElementById(btnId);
+    if(btn){btn.textContent='✅ Copied!';setTimeout(()=>{btn.textContent='📋 Copy';},2000);}
+  });
+}
+function copyAllCreds(uname,pass,name,role){
+  const text=`MediCore HMS — Login Credentials\n\nName: ${name}\nRole: ${role}\nUsername: ${uname}\nPassword: ${pass}\n\nNote: Password must be changed on first login.`;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.getElementById('btn-copy-all');
+    if(btn){btn.textContent='✅ All Copied!';btn.style.background='var(--green)';setTimeout(()=>{btn.textContent='📋 Copy All Credentials';btn.style.background='var(--accent)';},2500);}
+  });
+}
+
+// ===================== INIT =====================
+initData();
+document.getElementById('topbar-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
+</script>
+</body>
+</html>
